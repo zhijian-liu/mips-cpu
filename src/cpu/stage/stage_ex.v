@@ -7,22 +7,23 @@ module stage_ex(
 	input	wire[31:0]	operand_b,
 	
 	//	input
-	input	wire 		id_register_write_enable,
-	input	wire[4:0]	id_register_write_address,
+	input	wire 		register_write_enable_,
+	input	wire[4:0]	register_write_address_,
 
 	//	output
 	output	reg 		register_write_enable,
 	output	reg[4:0]	register_write_address,
 	output	reg[31:0]	register_write_data
 );
-	reg[31:0] result;
+	reg[31:0]	result;
 
 	always @ (*) begin
 		if (reset == 1) begin
 			result <= 0;
-		end else begin
+		end
+		else begin
 			case (operator)
-				6'b001101 :	begin
+				8'b00100101 : begin
 					result <= operand_a | operand_b;
 				end
 				default : begin
@@ -33,6 +34,16 @@ module stage_ex(
 	end
 
 	always @ (*) begin
+		register_write_enable <= register_write_enable_;
+		register_write_address <= register_write_address_;
 		
+		case (category)
+			3'b001 : begin
+				register_write_data <= result;
+			end
+			default : begin
+				register_write_data <= 0;
+			end
+		endcase
 	end
 endmodule

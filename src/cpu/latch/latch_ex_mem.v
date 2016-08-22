@@ -12,7 +12,7 @@ module latch_ex_mem(
 	output	reg[4:0]	mem_register_write_address,
 	output	reg[31:0]	mem_register_write_data
 );
-	always @ (posedge reset) begin
+	always @ (posedge clock) begin
 		if (reset == 1) begin
 			mem_register_write_enable <= 0;
 			mem_register_write_address <= 0;
