@@ -1,21 +1,26 @@
 module stage_id(
 	input	wire		reset,
-	input	wire[31:0]	register_pc,
+
+	input	wire[31:0]	program_counter,
 	input	wire[31:0]	instruction,
-	input	wire[31:0]	register_a_read_data,
-	input	wire[31:0]	register_b_read_data,
-	output	reg 		register_a_read_enable,
-	output	reg 		register_b_read_enable,
-	output	reg[5:0]	register_a_read_address,
-	output	reg[5:0]	register_b_read_address,
-	output	reg[8:0]	alu_operator,
-	output	reg[3:0]	alu_....,
-	output	reg[3:0]	alu_operand_a
-	output	reg[]		alu_operand_b
-	output	reg	 		write_enable,
-	output	reg[5:0]	write_address
+	
+	//	register read port A
+	output	reg 		register_read_enable_a,
+	output	reg[4:0]	register_read_address_a,
+	input	wire[31:0]	register_read_data_a,
+
+	//	register read port B
+	output	reg 		register_read_enable_b,
+	output	reg[4:0]	register_read_address_b,
+	input	wire[31:0]	register_read_data_b,
+	
+	output	reg[7:0]	operator,
+	output	reg[3:0]	category,
+	output	reg[31:0]	operand_a,
+	output	reg[31:0]	operand_b,
+
+	output	reg	 		register_write_enable,
+	output	reg[4:0]	register_write_address
 );
-
-
 
 endmodule
