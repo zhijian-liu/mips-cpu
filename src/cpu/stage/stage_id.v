@@ -20,7 +20,17 @@ module stage_id(
 	output	reg[31:0]	operand_b,
 
 	output	reg	 		register_write_enable,
-	output	reg[4:0]	register_write_address
+	output	reg[4:0]	register_write_address,
+
+	//	forwarding from stage ex
+	input	wire 		ex_register_write_enable,
+	input	wire[4:0]	ex_register_write_address,
+	input	wire[31:0]	ex_register_write_data,
+
+	//	forwarding from stage mem
+	input	wire 		mem_register_write_enable,
+	input	wire[4:0]	mem_register_write_address,
+	input	wire[31:0]	mem_register_write_data
 );
 	reg[31:0]	immediate_value;
 	reg 		instruction_valid;
@@ -58,7 +68,7 @@ module stage_id(
 					category <= 3'b001;
 					register_write_enable <= 1;
 					register_write_address <= instruction[20:16];
-					immediate_value <= {16'b0, instruction[15:0]};
+					immediate_value <= instruction[15:0];
 					instruction_valid <= 1;
 				end
 				default : begin
@@ -70,6 +80,12 @@ module stage_id(
 	always @ (*) begin
 		if (reset == 1) begin
 			operand_a <= 0;
+		end
+		else if ((register_read_enable_a == 1) && (ex_register_write_enable == 1) && (register_read_address_a == ex_register_write_address)) begin
+			operand_a <= ex_register_write_data;
+		end
+		else if ((register_read_enable_a == 1) && (mem_register_write_enable == 1) && (register_read_address_a == mem_register_write_address)) begin
+			operand_a <= mem_register_write_data;
 		end
 		else if (register_read_enable_a == 1) begin
 			operand_a <= register_read_data_a;
@@ -85,6 +101,12 @@ module stage_id(
 	always @ (*) begin
 		if (reset == 1) begin
 			operand_b <= 0;
+		end
+		else if ((register_read_enable_b == 1) && (ex_register_write_enable == 1) && (register_read_address_b == ex_register_write_address)) begin
+			operand_b <= ex_register_write_data;
+		end
+		else if ((register_read_enable_b == 1) && (mem_register_write_enable == 1) && (register_read_address_b == mem_register_write_address)) begin
+			operand_b <= mem_register_write_data;
 		end
 		else if (register_read_enable_b == 1) begin
 			operand_b <= register_read_data_b;

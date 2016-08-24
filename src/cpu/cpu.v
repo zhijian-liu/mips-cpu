@@ -79,7 +79,13 @@ module cpu(
 		.operand_a(id_operand_a),
 		.operand_b(id_operand_b),
 		.register_write_enable(id_register_write_enable),
-		.register_write_address(id_register_write_address)
+		.register_write_address(id_register_write_address),
+		.ex_register_write_enable(ex_register_write_enable),
+		.ex_register_write_address(ex_register_write_address),
+		.ex_register_write_data(ex_register_write_data),
+		.mem_register_write_enable(mem_register_write_enable),
+		.mem_register_write_address(mem_register_write_address),
+		.mem_register_write_data(mem_register_write_data)
 	);
 
 	register _register(

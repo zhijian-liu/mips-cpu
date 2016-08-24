@@ -41,7 +41,7 @@ module register(
 		else if (read_address_a == 0) begin
 			read_data_a <= 0;
 		end
-		else if ((read_data_a == write_address) && (write_enable == 1) && (read_enable_a == 1)) begin
+		else if ((read_enable_a == 1) && (write_enable == 1) && (read_data_a == write_address)) begin
 			read_data_a <= write_data;
 		end
 		else if (read_enable_a == 1) begin
@@ -59,7 +59,7 @@ module register(
 		else if (read_address_b == 0) begin
 			read_data_b <= 0;
 		end
-		else if ((read_data_b == write_address) && (write_enable == 1) && (read_enable_b == 1)) begin
+		else if ((read_enable_b == 1) && (write_enable == 1) && (read_data_b == write_address)) begin
 			read_data_b <= write_data;
 		end
 		else if (read_enable_b == 1) begin
