@@ -1,23 +1,21 @@
 module latch_if_id(
-	input	wire		clock,
-	input	wire		reset,
-	
-	//	input
-	input	wire[31:0]	if_program_counter,
-	input	wire[31:0]	if_instruction,
-	
-	//	output
-	output	reg[31:0]	id_program_counter,
-	output	reg[31:0]	id_instruction
+    input   wire        clock,
+    input   wire        reset,
+    
+    input   wire[31:0]  if_register_pc,
+    input   wire[31:0]  if_instruction,
+    
+    output  reg[31:0]   id_register_pc,
+    output  reg[31:0]   id_instruction
 );
-	always @ (posedge clock) begin
-		if (reset == 1) begin
-			id_program_counter <= 0;
-			id_instruction <= 0;
-		end
-		else begin
-			id_program_counter <= if_program_counter;
-			id_instruction <= if_instruction;
-		end
-	end
+    always @ (posedge clock) begin
+        if (reset == `RESET_ENABLE) begin
+            id_register_pc <= 32'b0;
+            id_instruction <= 32'b0;
+        end
+        else begin
+            id_register_pc <= if_register_pc;
+            id_instruction <= if_instruction;
+        end
+    end
 endmodule
