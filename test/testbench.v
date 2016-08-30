@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-`include "../src/utility/define.v"
+`include "../src/cpu/utility.v"
 `include "../src/cpu/stage/stage_if.v"
 `include "../src/cpu/stage/stage_id.v"
 `include "../src/cpu/stage/stage_ex.v"

@@ -4,7 +4,7 @@ module rom(
     input   wire[31:0]  address,
     output  reg[31:0]   data
 );
-    reg[31:0]   storage[0:131070];
+    reg[31:0]   storage[0:1024];
 
     always @ (*) begin
         if (chip_enable == `CHIP_DISABLE) begin
