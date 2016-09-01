@@ -29,22 +29,41 @@ module cpu(
     wire[2:0]   ex_category;
     wire[31:0]  ex_operand_a;
     wire[31:0]  ex_operand_b;
-    wire        ex_register_write_enable_;
-    wire[4:0]   ex_register_write_address_;
-    wire        ex_register_write_enable;
-    wire[4:0]   ex_register_write_address;
+    wire        ex_register_write_enable_i;
+    wire[4:0]   ex_register_write_address_i;
+    wire        ex_register_write_enable_o;
+    wire[4:0]   ex_register_write_address_o;
     wire[31:0]  ex_register_write_data;
+    wire        ex_register_hi_write_enable;
+    wire[31:0]  ex_register_hi_write_data;
+    wire        ex_register_lo_write_enable;
+    wire[31:0]  ex_register_lo_write_data;
 
-    wire        mem_register_write_enable_;
-    wire[4:0]   mem_register_write_address_;
-    wire[31:0]  mem_register_write_data_;
-    wire        mem_register_write_enable;
-    wire[4:0]   mem_register_write_address;
-    wire[31:0]  mem_register_write_data;
+    wire        mem_register_write_enable_i;
+    wire[4:0]   mem_register_write_address_i;
+    wire[31:0]  mem_register_write_data_i;
+    wire        mem_register_hi_write_enable_i;
+    wire[31:0]  mem_register_hi_write_data_i;
+    wire        mem_register_lo_write_enable_i;
+    wire[31:0]  mem_register_lo_write_data_i;
+
+    wire        mem_register_write_enable_o;
+    wire[4:0]   mem_register_write_address_o;
+    wire[31:0]  mem_register_write_data_o;
+    wire        mem_register_hi_write_enable_o;
+    wire[31:0]  mem_register_hi_write_data_o;
+    wire        mem_register_lo_write_enable_o;
+    wire[31:0]  mem_register_lo_write_data_o;
 
     wire        wb_register_write_enable;
     wire[4:0]   wb_register_write_address;
     wire[31:0]  wb_register_write_data;
+    wire        wb_register_hi_write_enable;
+    wire[31:0]  wb_register_hi_write_data;
+    wire[31:0]  wb_register_hi_read_data;
+    wire        wb_register_lo_write_enable;
+    wire[31:0]  wb_register_lo_write_data;
+    wire[31:0]  wb_register_lo_read_data;
 
     stage_if stage_if(
         .clock(clock),
@@ -80,12 +99,12 @@ module cpu(
         .operand_b(id_operand_b),
         .register_write_enable(id_register_write_enable),
         .register_write_address(id_register_write_address),
-        .ex_register_write_enable(ex_register_write_enable),
-        .ex_register_write_address(ex_register_write_address),
+        .ex_register_write_enable(ex_register_write_enable_o),
+        .ex_register_write_address(ex_register_write_address_o),
         .ex_register_write_data(ex_register_write_data),
-        .mem_register_write_enable(mem_register_write_enable),
-        .mem_register_write_address(mem_register_write_address),
-        .mem_register_write_data(mem_register_write_data)
+        .mem_register_write_enable(mem_register_write_enable_o),
+        .mem_register_write_address(mem_register_write_address_o),
+        .mem_register_write_data(mem_register_write_data_o)
     );
 
     register register(
@@ -115,8 +134,8 @@ module cpu(
         .ex_category(ex_category),
         .ex_operand_a(ex_operand_a),
         .ex_operand_b(ex_operand_b),
-        .ex_register_write_enable(ex_register_write_enable_),
-        .ex_register_write_address(ex_register_write_address_)
+        .ex_register_write_enable(ex_register_write_enable_i),
+        .ex_register_write_address(ex_register_write_address_i)
     );
 
     stage_ex stage_ex(
@@ -125,42 +144,91 @@ module cpu(
         .category(ex_category),
         .operand_a(ex_operand_a),
         .operand_b(ex_operand_b),
-        .register_write_enable_(ex_register_write_enable_),
-        .register_write_address_(ex_register_write_address_),
-        .register_write_enable(ex_register_write_enable),
-        .register_write_address(ex_register_write_address),
-        .register_write_data(ex_register_write_data)
+        .register_write_enable_i(ex_register_write_enable_i),
+        .register_write_address_i(ex_register_write_address_i),
+        .register_write_enable_o(ex_register_write_enable_o),
+        .register_write_address_o(ex_register_write_address_o),
+        .register_write_data(ex_register_write_data),
+        .register_hi_write_enable(ex_register_hi_write_enable),
+        .register_hi_write_data(ex_register_hi_write_data),
+        .register_lo_write_enable(ex_register_lo_write_enable),
+        .register_lo_write_data(ex_register_lo_write_data),
+        .mem_register_hi_write_enable(mem_register_hi_write_enable_o),
+        .mem_register_hi_write_data(mem_register_hi_write_data_o),
+        .mem_register_lo_write_enable(mem_register_lo_write_enable_o),
+        .mem_register_lo_write_data(mem_register_lo_write_data_o),
+        .wb_register_hi_read_data(wb_register_hi_read_data),
+        .wb_register_hi_write_enable(wb_register_hi_write_enable),
+        .wb_register_hi_write_data(wb_register_hi_write_data),
+        .wb_register_lo_read_data(wb_register_lo_read_data),
+        .wb_register_lo_write_enable(wb_register_lo_write_enable),
+        .wb_register_lo_write_data(wb_register_lo_write_data)
     );
 
     latch_ex_mem latch_ex_mem(
         .clock(clock),
         .reset(reset),
-        .ex_register_write_enable(ex_register_write_enable),
-        .ex_register_write_address(ex_register_write_address),
+        .ex_register_write_enable(ex_register_write_enable_o),
+        .ex_register_write_address(ex_register_write_address_o),
         .ex_register_write_data(ex_register_write_data),
-        .mem_register_write_enable(mem_register_write_enable_),
-        .mem_register_write_address(mem_register_write_address_),
-        .mem_register_write_data(mem_register_write_data_)
+        .ex_register_hi_write_enable(ex_register_hi_write_enable),
+        .ex_register_hi_write_data(ex_register_hi_write_data),
+        .ex_register_lo_write_enable(ex_register_lo_write_enable),
+        .ex_register_lo_write_data(ex_register_lo_write_data),
+        .mem_register_write_enable(mem_register_write_enable_i),
+        .mem_register_write_address(mem_register_write_address_i),
+        .mem_register_write_data(mem_register_write_data_i),
+        .mem_register_hi_write_enable(mem_register_hi_write_enable_i),
+        .mem_register_hi_write_data(mem_register_hi_write_data_i),
+        .mem_register_lo_write_enable(mem_register_lo_write_enable_i),
+        .mem_register_lo_write_data(mem_register_lo_write_data_i)
     );
 
     stage_mem stage_mem(
         .reset(reset),
-        .register_write_enable_(mem_register_write_enable_),
-        .register_write_address_(mem_register_write_address_),
-        .register_write_data_(mem_register_write_data_),
-        .register_write_enable(mem_register_write_enable),
-        .register_write_address(mem_register_write_address),
-        .register_write_data(mem_register_write_data)
+        .register_write_enable_i(mem_register_write_enable_i),
+        .register_write_address_i(mem_register_write_address_i),
+        .register_write_data_i(mem_register_write_data_i),
+        .register_write_enable_o(mem_register_write_enable_o),
+        .register_write_address_o(mem_register_write_address_o),
+        .register_write_data_o(mem_register_write_data_o),
+        .register_hi_write_enable_i(mem_register_hi_write_enable_i),
+        .register_hi_write_data_i(mem_register_hi_write_data_i),
+        .register_lo_write_enable_i(mem_register_lo_write_enable_i),
+        .register_lo_write_data_i(mem_register_lo_write_data_i),
+        .register_hi_write_enable_o(mem_register_hi_write_enable_o),
+        .register_hi_write_data_o(mem_register_hi_write_data_o),
+        .register_lo_write_enable_o(mem_register_lo_write_enable_o),
+        .register_lo_write_data_o(mem_register_lo_write_data_o)
     );
 
     latch_mem_wb latch_mem_wb(
         .clock(clock),
         .reset(reset),
-        .mem_register_write_enable(mem_register_write_enable),
-        .mem_register_write_address(mem_register_write_address),
-        .mem_register_write_data(mem_register_write_data),
+        .mem_register_write_enable(mem_register_write_enable_o),
+        .mem_register_write_address(mem_register_write_address_o),
+        .mem_register_write_data(mem_register_write_data_o),
+        .mem_register_hi_write_enable(mem_register_hi_write_enable_o),
+        .mem_register_hi_write_data(mem_register_hi_write_data_o),
+        .mem_register_lo_write_enable(mem_register_lo_write_enable_o),
+        .mem_register_lo_write_data(mem_register_lo_write_data_o),
         .wb_register_write_enable(wb_register_write_enable),
         .wb_register_write_address(wb_register_write_address),
-        .wb_register_write_data(wb_register_write_data)
+        .wb_register_write_data(wb_register_write_data),
+        .wb_register_hi_write_enable(wb_register_hi_write_enable),
+        .wb_register_hi_write_data(wb_register_hi_write_data),
+        .wb_register_lo_write_enable(wb_register_lo_write_enable),
+        .wb_register_lo_write_data(wb_register_lo_write_data)
+    );
+
+    stage_wb stage_wb(
+        .clock(clock),
+        .reset(reset),
+        .register_hi_write_enable(wb_register_hi_write_enable),
+        .register_hi_write_data(wb_register_hi_write_data),
+        .register_hi_read_data(wb_register_hi_read_data),
+        .register_lo_write_enable(wb_register_lo_write_enable),
+        .register_lo_write_data(wb_register_lo_write_data),
+        .register_lo_read_data(wb_register_lo_read_data)
     );
 endmodule

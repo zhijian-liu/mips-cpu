@@ -25,6 +25,12 @@
 `define OPCODE_SRAV             6'b000111
 `define OPCODE_SYNC             6'b001111
 `define OPCODE_PREF             6'b110011
+`define OPCODE_MOVZ				6'b001010  
+`define OPCODE_MOVN				6'b001011  
+`define OPCODE_MFHI				6'b010000  
+`define OPCODE_MTHI				6'b010001  
+`define OPCODE_MFLO				6'b010010  
+`define OPCODE_MTLO				6'b010011  
 
 `define OPERATOR_NOP            8'b00000000
 `define OPERATOR_AND            8'b00000001
@@ -34,7 +40,14 @@
 `define OPERATOR_SLL            8'b00000101
 `define OPERATOR_SRL            8'b00000110
 `define OPERATOR_SRA            8'b00000111
+`define OPERATOR_MOVZ			8'b00001000
+`define OPERATOR_MOVN			8'b00001001
+`define OPERATOR_MFHI			8'b00001010
+`define OPERATOR_MTHI			8'b00001011
+`define OPERATOR_MFLO			8'b00001100
+`define OPERATOR_MTLO			8'b00001101
 
-`define CATEGORY_NOP            3'b000
+`define CATEGORY_NONE           3'b000
 `define CATEGORY_LOGIC          3'b001
 `define CATEGORY_SHIFT          3'b010
+`define CATEGORY_MOVE			3'b011
