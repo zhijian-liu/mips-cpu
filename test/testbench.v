@@ -64,7 +64,7 @@ module test_bench();
     initial begin
         reset = 1;
         #195    reset = 0;
-        #1000   $stop;
+        #1000   $finish;
     end
 
     initial begin
