@@ -8,10 +8,11 @@ module stage_ex(
     
     input   wire        register_write_enable_i,
     input   wire[4:0]   register_write_address_i,
-    
+    input   wire[31:0]  register_write_data_i,
+
     output  reg         register_write_enable_o,
     output  reg[4:0]    register_write_address_o,
-    output  reg[31:0]   register_write_data,
+    output  reg[31:0]   register_write_data_o,
 
     output  reg         register_hi_write_enable,
     output  reg[31:0]   register_hi_write_data,
@@ -171,7 +172,6 @@ module stage_ex(
         end
     end
 
-
     reg[31:0]   operand_sum;
 
     always @ (*) begin
@@ -304,6 +304,20 @@ module stage_ex(
         end
     end
 
+    /**
+     *  Calculate the result for the jump instructions.
+     */
+    reg[31:0]   result_jump;
+
+    always @ (*) begin
+        if (reset == `RESET_ENABLE) begin
+            result_jump <= 32'b0;
+        end
+        else begin
+            result_jump <= register_write_data_i;
+        end
+    end
+
     always @ (*) begin
         case (operator)
             `OPERATOR_ADD : begin
@@ -334,19 +348,22 @@ module stage_ex(
         
         case (category)
             `CATEGORY_LOGIC : begin
-                register_write_data <= result_logic;
+                register_write_data_o <= result_logic;
             end
             `CATEGORY_SHIFT : begin
-                register_write_data <= result_shift;
+                register_write_data_o <= result_shift;
             end
             `CATEGORY_MOVE : begin
-                register_write_data <= result_move;
+                register_write_data_o <= result_move;
             end
             `CATEGORY_ARITHMETIC : begin
-                register_write_data <= result_arithmetic[31:0];
+                register_write_data_o <= result_arithmetic[31:0];
+            end
+            `CATEGORY_JUMP : begin
+                register_write_data_o <= result_jump;
             end
             default : begin
-                register_write_data <= 32'b0;
+                register_write_data_o <= 32'b0;
             end
         endcase
     end

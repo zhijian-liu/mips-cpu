@@ -11,6 +11,8 @@ module cpu(
 
     wire[31:0]  if_register_pc_read_data;
 
+    wire        id_register_pc_write_enable;
+    wire[31:0]  id_register_pc_write_data;
     wire[31:0]  id_register_pc_read_data;
     wire[31:0]  id_instruction;
     wire[7:0]   id_operator;
@@ -19,6 +21,7 @@ module cpu(
     wire[31:0]  id_operand_b;
     wire        id_register_write_enable;
     wire[4:0]   id_register_write_address;
+    wire[31:0]  id_register_write_data;
     wire        id_stall_request;
 
     wire        register_read_enable_a;
@@ -34,9 +37,10 @@ module cpu(
     wire[31:0]  ex_operand_b;
     wire        ex_register_write_enable_i;
     wire[4:0]   ex_register_write_address_i;
+    wire[31:0]  ex_register_write_data_i;
     wire        ex_register_write_enable_o;
     wire[4:0]   ex_register_write_address_o;
-    wire[31:0]  ex_register_write_data;
+    wire[31:0]  ex_register_write_data_o;
     wire        ex_register_hi_write_enable;
     wire[31:0]  ex_register_hi_write_data;
     wire        ex_register_lo_write_enable;
@@ -80,6 +84,8 @@ module cpu(
         .reset(reset),
         .stall(control_stall),
         .chip_enable(rom_chip_enable),
+        .register_pc_write_enable(id_register_pc_write_enable),
+        .register_pc_write_data(id_register_pc_write_data),
         .register_pc_read_data(if_register_pc_read_data)
     );
 
@@ -98,6 +104,8 @@ module cpu(
     stage_id stage_id(
         .reset(reset),
         .instruction(id_instruction),
+        .register_pc_write_enable(id_register_pc_write_enable),
+        .register_pc_write_data(id_register_pc_write_data),
         .register_pc_read_data(id_register_pc_read_data),
         .register_read_enable_a(register_read_enable_a),
         .register_read_address_a(register_read_address_a),
@@ -111,9 +119,10 @@ module cpu(
         .operand_b(id_operand_b),
         .register_write_enable(id_register_write_enable),
         .register_write_address(id_register_write_address),
+        .register_write_data(id_register_write_data),
         .ex_register_write_enable(ex_register_write_enable_o),
         .ex_register_write_address(ex_register_write_address_o),
-        .ex_register_write_data(ex_register_write_data),
+        .ex_register_write_data(ex_register_write_data_o),
         .mem_register_write_enable(mem_register_write_enable_o),
         .mem_register_write_address(mem_register_write_address_o),
         .mem_register_write_data(mem_register_write_data_o),
@@ -144,12 +153,14 @@ module cpu(
         .id_operand_b(id_operand_b),
         .id_register_write_enable(id_register_write_enable),
         .id_register_write_address(id_register_write_address),
+        .id_register_write_data(id_register_write_data),
         .ex_operator(ex_operator),
         .ex_category(ex_category),
         .ex_operand_a(ex_operand_a),
         .ex_operand_b(ex_operand_b),
         .ex_register_write_enable(ex_register_write_enable_i),
-        .ex_register_write_address(ex_register_write_address_i)
+        .ex_register_write_address(ex_register_write_address_i),
+        .ex_register_write_data(ex_register_write_data_i)
     );
 
     stage_ex stage_ex(
@@ -160,9 +171,10 @@ module cpu(
         .operand_b(ex_operand_b),
         .register_write_enable_i(ex_register_write_enable_i),
         .register_write_address_i(ex_register_write_address_i),
+        .register_write_data_i(ex_register_write_data_i),
         .register_write_enable_o(ex_register_write_enable_o),
         .register_write_address_o(ex_register_write_address_o),
-        .register_write_data(ex_register_write_data),
+        .register_write_data_o(ex_register_write_data_o),
         .register_hi_write_enable(ex_register_hi_write_enable),
         .register_hi_write_data(ex_register_hi_write_data),
         .register_lo_write_enable(ex_register_lo_write_enable),
@@ -186,7 +198,7 @@ module cpu(
         .stall(control_stall),
         .ex_register_write_enable(ex_register_write_enable_o),
         .ex_register_write_address(ex_register_write_address_o),
-        .ex_register_write_data(ex_register_write_data),
+        .ex_register_write_data(ex_register_write_data_o),
         .ex_register_hi_write_enable(ex_register_hi_write_enable),
         .ex_register_hi_write_data(ex_register_hi_write_data),
         .ex_register_lo_write_enable(ex_register_lo_write_enable),

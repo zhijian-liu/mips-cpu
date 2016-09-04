@@ -36,6 +36,7 @@ module test_bench();
     wire[31:0]  register_29;
     wire[31:0]  register_30;
     wire[31:0]  register_31;
+    wire[31:0]  register_pc;
     wire[31:0]  register_hi;
     wire[31:0]  register_lo;
 
@@ -94,6 +95,7 @@ module test_bench();
     assign register_29 = sopc.cpu.register.storage[29];
     assign register_30 = sopc.cpu.register.storage[30];
     assign register_31 = sopc.cpu.register.storage[31];
+    assign register_pc = sopc.cpu.stage_if.register_pc_read_data;
     assign register_hi = sopc.cpu.stage_wb.register_hi_read_data;
     assign register_lo = sopc.cpu.stage_wb.register_lo_read_data;
 

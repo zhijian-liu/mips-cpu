@@ -4,7 +4,9 @@ module stage_id(
     input   wire[31:0]  instruction,
 
     input   wire[31:0]  register_pc_read_data,
-    
+    output  reg         register_pc_write_enable,
+    output  reg[31:0]   register_pc_write_data,
+
     /**
      *  Register read port A.
      */
@@ -26,6 +28,7 @@ module stage_id(
 
     output  reg         register_write_enable,
     output  reg[4:0]    register_write_address,
+    output  reg[31:0]   register_write_data,
 
     /**
      *  Forwarding from the stage `ex`.
@@ -43,33 +46,43 @@ module stage_id(
 
     output  reg         stall_request
 );
+    wire[31:0]  register_pc_next;
+
+    assign register_pc_next = register_pc_read_data + 32'd4;
+
     reg[31:0]   immediate_value;
     reg         instruction_valid;
 
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
-            register_read_enable_a  <= `READ_DISABLE;
-            register_read_address_a <= 5'b0;
-            register_read_enable_b  <= `READ_DISABLE;
-            register_read_address_b <= 5'b0;
-            operator                <= `OPERATOR_NOP;
-            category                <= `CATEGORY_NONE;
-            register_write_enable   <= `WRITE_DISABLE;
-            register_write_address  <= 5'b0;
-            immediate_value         <= 32'b0;
-            instruction_valid       <= `INSTRUCTION_VALID;
+            register_pc_write_enable    <= `WRITE_DISABLE;
+            register_pc_write_data      <= 32'b0;
+            register_read_enable_a      <= `READ_DISABLE;
+            register_read_address_a     <= 5'b0;
+            register_read_enable_b      <= `READ_DISABLE;
+            register_read_address_b     <= 5'b0;
+            operator                    <= `OPERATOR_NOP;
+            category                    <= `CATEGORY_NONE;
+            register_write_enable       <= `WRITE_DISABLE;
+            register_write_address      <= 5'b0;
+            register_write_data         <= 32'b0;
+            immediate_value             <= 32'b0;
+            instruction_valid           <= `INSTRUCTION_VALID;
         end
         else begin
-            register_read_enable_a  <= `READ_DISABLE;
-            register_read_address_a <= instruction[25:21];
-            register_read_enable_b  <= `READ_DISABLE;
-            register_read_address_b <= instruction[20:16];
-            operator                <= `OPERATOR_NOP;
-            category                <= `CATEGORY_NONE;
-            register_write_enable   <= `WRITE_DISABLE;
-            register_write_address  <= instruction[15:11];
-            immediate_value         <= 32'b0;
-            instruction_valid       <= `INSTRUCTION_INVALID;
+            register_pc_write_enable    <= `WRITE_DISABLE;
+            register_pc_write_data      <= 32'b0;
+            register_read_enable_a      <= `READ_DISABLE;
+            register_read_address_a     <= instruction[25:21];
+            register_read_enable_b      <= `READ_DISABLE;
+            register_read_address_b     <= instruction[20:16];
+            operator                    <= `OPERATOR_NOP;
+            category                    <= `CATEGORY_NONE;
+            register_write_enable       <= `WRITE_DISABLE;
+            register_write_address      <= instruction[15:11];
+            register_write_data         <= 32'b0;
+            immediate_value             <= 32'b0;
+            instruction_valid           <= `INSTRUCTION_INVALID;
 
             case (instruction[31:26])
                 6'b000000 : begin
@@ -252,6 +265,28 @@ module stage_id(
                                     register_write_enable   <= `WRITE_DISABLE;
                                     instruction_valid       <= `INSTRUCTION_VALID;
                                 end
+                                `OPCODE_JR : begin
+                                    register_read_enable_a      <= `READ_ENABLE;
+                                    register_read_enable_b      <= `READ_DISABLE;
+                                    operator                    <= `OPERATOR_JR;
+                                    category                    <= `CATEGORY_JUMP;
+                                    register_write_enable       <= `WRITE_DISABLE;
+                                    register_pc_write_enable    <= `WRITE_ENABLE;
+                                    register_pc_write_data      <= operand_a;
+                                    instruction_valid           <= `INSTRUCTION_VALID;
+                                end
+                                `OPCODE_JALR : begin
+                                    register_read_enable_a      <= `READ_ENABLE;
+                                    register_read_enable_b      <= `READ_DISABLE;
+                                    operator                    <= `OPERATOR_JALR;
+                                    category                    <= `CATEGORY_JUMP;
+                                    register_write_enable       <= `WRITE_ENABLE;
+                                    register_write_address      <= instruction[15:11];
+                                    register_write_data         <= register_pc_read_data + 32'd8;
+                                    register_pc_write_enable    <= `WRITE_ENABLE;
+                                    register_pc_write_data      <= operand_a;
+                                    instruction_valid           <= `INSTRUCTION_VALID;
+                                end
                                 default : begin
 
                                 end
@@ -259,6 +294,54 @@ module stage_id(
                         end
                         default : begin
 
+                        end
+                    endcase
+                end
+                6'b000001 : begin
+                    case (instruction[20:16])
+                        `OPCODE_BGEZ : begin
+                            register_read_enable_a      <= `READ_ENABLE;
+                            register_read_enable_b      <= `READ_DISABLE;
+                            operator                    <= `OPERATOR_BGEZ;
+                            category                    <= `CATEGORY_JUMP;
+                            register_write_enable       <= `WRITE_DISABLE;
+                            register_pc_write_enable    <= (operand_a[31] == 1'b0) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                            register_pc_write_data      <= register_pc_read_data + 32'd4 + {{14 {instruction[15]}}, instruction[15:0], 2'b00};
+                            instruction_valid           <= `INSTRUCTION_VALID;
+                        end
+                        `OPCODE_BGEZAL : begin
+                            register_read_enable_a      <= `READ_ENABLE;
+                            register_read_enable_b      <= `READ_DISABLE;
+                            operator                    <= `OPERATOR_BGEZAL;
+                            category                    <= `CATEGORY_JUMP;
+                            register_write_enable       <= `WRITE_ENABLE;
+                            register_write_address      <= 5'b11111;
+                            register_write_data         <= register_pc_read_data + 32'd8;
+                            register_pc_write_enable    <= (operand_a[31] == 1'b0) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                            register_pc_write_data      <= register_pc_read_data + 32'd4 + {{14 {instruction[15]}}, instruction[15:0], 2'b00};
+                            instruction_valid           <= `INSTRUCTION_VALID;
+                        end
+                        `OPCODE_BLTZ : begin
+                            register_read_enable_a      <= `READ_ENABLE;
+                            register_read_enable_b      <= `READ_DISABLE;
+                            operator                    <= `OPERATOR_BLTZ;
+                            category                    <= `CATEGORY_JUMP;
+                            register_write_enable       <= `WRITE_DISABLE;
+                            register_pc_write_enable    <= (operand_a[31] == 1'b1) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                            register_pc_write_data      <= register_pc_read_data + 32'd4 + {{14 {instruction[15]}}, instruction[15:0], 2'b00};
+                            instruction_valid           <= `INSTRUCTION_VALID;
+                        end
+                        `OPCODE_BLTZAL : begin
+                            register_read_enable_a      <= `READ_ENABLE;
+                            register_read_enable_b      <= `READ_DISABLE;
+                            operator                    <= `OPERATOR_BLTZAL;
+                            category                    <= `CATEGORY_JUMP;
+                            register_write_enable       <= `WRITE_ENABLE;
+                            register_write_address      <= 5'b11111;
+                            register_write_data         <= register_pc_read_data + 32'd8;
+                            register_pc_write_enable    <= (operand_a[31] == 1'b1) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                            register_pc_write_data      <= register_pc_read_data + 32'd4 + {{14 {instruction[15]}}, instruction[15:0], 2'b00};
+                            instruction_valid           <= `INSTRUCTION_VALID;
                         end
                     endcase
                 end
@@ -290,6 +373,7 @@ module stage_id(
                         end
                     endcase
                 end
+
                 `OPCODE_ANDI : begin
                     register_read_enable_a  <= `READ_ENABLE;
                     register_read_enable_b  <= `READ_DISABLE;
@@ -377,6 +461,68 @@ module stage_id(
                     register_write_address  <= instruction[20:16];
                     immediate_value         <= {{16 {instruction[15]}}, instruction[15:0]};
                     instruction_valid       <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_J : begin
+                    register_read_enable_a      <= `READ_DISABLE;
+                    register_read_enable_b      <= `READ_DISABLE;
+                    operator                    <= `OPERATOR_J;
+                    category                    <= `CATEGORY_JUMP;
+                    register_write_enable       <= `WRITE_DISABLE;
+                    register_pc_write_enable    <= `WRITE_ENABLE;
+                    register_pc_write_data      <= {register_pc_next[31:28], instruction[25:0], 2'b0};
+                    instruction_valid           <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_JAL : begin
+                    register_read_enable_a      <= `READ_DISABLE;
+                    register_read_enable_b      <= `READ_DISABLE;
+                    operator                    <= `OPERATOR_JAL;
+                    category                    <= `CATEGORY_JUMP;
+                    register_write_enable       <= `WRITE_ENABLE;
+                    register_write_address      <= 5'b11111;
+                    register_write_data         <= register_pc_read_data + 32'd8;
+                    register_pc_write_enable    <= `WRITE_ENABLE;
+                    register_pc_write_data      <= {register_pc_next[31:28], instruction[25:0], 2'b0};
+                    instruction_valid           <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_BEQ : begin
+                    register_read_enable_a      <= `READ_ENABLE;
+                    register_read_enable_b      <= `READ_ENABLE;
+                    operator                    <= `OPERATOR_BEQ;
+                    category                    <= `CATEGORY_JUMP;
+                    register_write_enable       <= `WRITE_DISABLE;
+                    register_pc_write_enable    <= (operand_a == operand_b) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                    register_pc_write_data      <= register_pc_read_data + 32'd4 + {{14 {instruction[15]}}, instruction[15:0], 2'b00};
+                    instruction_valid           <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_BGTZ : begin
+                    register_read_enable_a      <= `READ_ENABLE;
+                    register_read_enable_b      <= `READ_DISABLE;
+                    operator                    <= `OPERATOR_BGTZ;
+                    category                    <= `CATEGORY_JUMP;
+                    register_write_enable       <= `WRITE_DISABLE;
+                    register_pc_write_enable    <= (operand_a[31] == 1'b0 && operand_a != 32'b0) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                    register_pc_write_data      <= register_pc_read_data + 32'd4 + {{14 {instruction[15]}}, instruction[15:0], 2'b00};
+                    instruction_valid           <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_BLEZ : begin
+                    register_read_enable_a      <= `READ_ENABLE;
+                    register_read_enable_b      <= `READ_DISABLE;
+                    operator                    <= `OPERATOR_BLEZ;
+                    category                    <= `CATEGORY_JUMP;
+                    register_write_enable       <= `WRITE_DISABLE;
+                    register_pc_write_enable    <= (operand_a[31] == 1'b1 || operand_a == 32'b0) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                    register_pc_write_data      <= register_pc_read_data + 32'd4 + {{14 {instruction[15]}}, instruction[15:0], 2'b00};
+                    instruction_valid           <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_BNE : begin
+                    register_read_enable_a      <= `READ_ENABLE;
+                    register_read_enable_b      <= `READ_ENABLE;
+                    operator                    <= `OPERATOR_BNE;
+                    category                    <= `CATEGORY_JUMP;
+                    register_write_enable       <= `WRITE_DISABLE;
+                    register_pc_write_enable    <= (operand_a != operand_b ? `WRITE_ENABLE : `WRITE_DISABLE);
+                    register_pc_write_data      <= register_pc_read_data + 32'd4 + {{14 {instruction[15]}}, instruction[15:0], 2'b00};
+                    instruction_valid           <= `INSTRUCTION_VALID;
                 end
                 default : begin
 

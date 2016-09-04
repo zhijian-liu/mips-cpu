@@ -1,7 +1,7 @@
 import os, sys, argparse, binascii
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", dest = "s", default = "rom.s", type = str)
+parser.add_argument("-s", dest = "s", default = "assemble.s", type = str)
 parser.add_argument("-o", dest = "o", default = "rom.txt", type = str)
 parser.add_argument("-ld", dest = "ld", default = "ram.ld", type = str)
 parser.add_argument("-bin", dest = "bin", default = "mips-gcc-4.8.1/bin", type = str)

@@ -48,6 +48,18 @@
 `define OPCODE_MULT  			6'b011000
 `define OPCODE_MULTU 			6'b011001
 `define OPCODE_MUL   			6'b000010
+`define OPCODE_J      			6'b000010  
+`define OPCODE_JAL    			6'b000011  
+`define OPCODE_JALR   			6'b001001  
+`define OPCODE_JR     			6'b001000  
+`define OPCODE_BEQ    			6'b000100  
+`define OPCODE_BGEZ   			5'b00001  
+`define OPCODE_BGEZAL 			5'b10001  
+`define OPCODE_BGTZ   			6'b000111  
+`define OPCODE_BLEZ   			6'b000110  
+`define OPCODE_BLTZ   			5'b00000  
+`define OPCODE_BLTZAL 			5'b10000  
+`define OPCODE_BNE    			6'b000101  
 
 `define OPERATOR_NOP            8'b00000000
 `define OPERATOR_AND            8'b00000001
@@ -74,9 +86,22 @@
 `define OPERATOR_MULT  			8'b00010110
 `define OPERATOR_MULTU 			8'b00010111
 `define OPERATOR_MUL   			8'b00011000
+`define OPERATOR_J      		8'b00011001
+`define OPERATOR_JAL    		8'b00011010
+`define OPERATOR_JALR   		8'b00011011
+`define OPERATOR_JR     		8'b00011100
+`define OPERATOR_BEQ    		8'b00011101
+`define OPERATOR_BGEZ   		8'b00011110
+`define OPERATOR_BGEZAL 		8'b00011111
+`define OPERATOR_BGTZ   		8'b00100000
+`define OPERATOR_BLEZ   		8'b00100001
+`define OPERATOR_BLTZ   		8'b00100010
+`define OPERATOR_BLTZAL 		8'b00100011
+`define OPERATOR_BNE    		8'b00100100
 
 `define CATEGORY_NONE           3'b000
 `define CATEGORY_LOGIC          3'b001
 `define CATEGORY_SHIFT          3'b010
 `define CATEGORY_MOVE			3'b011
 `define CATEGORY_ARITHMETIC		3'b100
+`define CATEGORY_JUMP			3'b101

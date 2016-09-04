@@ -5,6 +5,8 @@ module stage_if(
 
     output  reg         chip_enable,
 
+    input   wire        register_pc_write_enable,
+    input   wire[31:0]  register_pc_write_data,
     output  reg[31:0]   register_pc_read_data
 );
     always @ (posedge clock) begin
@@ -21,7 +23,12 @@ module stage_if(
             register_pc_read_data <= 32'b0;
         end
         else if (stall[0] == `STALL_DISABLE) begin
-            register_pc_read_data <= register_pc_read_data + 32'd4;
+            if (register_pc_write_enable == `WRITE_ENABLE) begin
+                register_pc_read_data <= register_pc_write_data;      
+            end
+            else begin
+                register_pc_read_data <= register_pc_read_data + 32'd4;
+            end
         end
     end
 endmodule
