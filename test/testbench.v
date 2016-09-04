@@ -1,20 +1,5 @@
 `timescale 1ns/1ps
 
-`include "../src/cpu/utility.v"
-`include "../src/cpu/stage/stage_if.v"
-`include "../src/cpu/stage/stage_id.v"
-`include "../src/cpu/stage/stage_ex.v"
-`include "../src/cpu/stage/stage_mem.v"
-`include "../src/cpu/stage/stage_wb.v"
-`include "../src/cpu/latch/latch_if_id.v"
-`include "../src/cpu/latch/latch_id_ex.v"
-`include "../src/cpu/latch/latch_ex_mem.v"
-`include "../src/cpu/latch/latch_mem_wb.v"
-`include "../src/cpu/register.v"
-`include "../src/cpu/cpu.v"
-`include "../src/rom.v"
-`include "../src/sopc.v"
-
 module test_bench();
     reg         clock;
     reg         reset;

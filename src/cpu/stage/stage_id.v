@@ -185,14 +185,106 @@ module stage_id(
                                     register_write_enable   <= (operand_b == 32'b0) ? `WRITE_ENABLE : `WRITE_DISABLE;
                                     instruction_valid       <= `INSTRUCTION_VALID;
                                 end
+                                `OPCODE_SLT : begin
+                                    register_read_enable_a  <= `READ_ENABLE;
+                                    register_read_enable_b  <= `READ_ENABLE;
+                                    operator                <= `OPERATOR_SLT;
+                                    category                <= `CATEGORY_ARITHMETIC;
+                                    register_write_enable   <= `WRITE_ENABLE;
+                                    instruction_valid       <= `INSTRUCTION_VALID;
+                                end
+                                `OPCODE_SLTU : begin
+                                    register_read_enable_a  <= `READ_ENABLE;
+                                    register_read_enable_b  <= `READ_ENABLE;
+                                    operator                <= `OPERATOR_SLTU;
+                                    category                <= `CATEGORY_ARITHMETIC;
+                                    register_write_enable   <= `WRITE_ENABLE;
+                                    instruction_valid       <= `INSTRUCTION_VALID;
+                                end
+                                `OPCODE_ADD : begin
+                                    register_read_enable_a  <= `READ_ENABLE;
+                                    register_read_enable_b  <= `READ_ENABLE;
+                                    operator                <= `OPERATOR_ADD;
+                                    category                <= `CATEGORY_ARITHMETIC;
+                                    register_write_enable   <= `WRITE_ENABLE;
+                                    instruction_valid       <= `INSTRUCTION_VALID;
+                                end
+                                `OPCODE_ADDU : begin
+                                    register_read_enable_a  <= `READ_ENABLE;
+                                    register_read_enable_b  <= `READ_ENABLE;
+                                    operator                <= `OPERATOR_ADDU;
+                                    category                <= `CATEGORY_ARITHMETIC;
+                                    register_write_enable   <= `WRITE_ENABLE;
+                                    instruction_valid       <= `INSTRUCTION_VALID;
+                                end
+                                `OPCODE_SUB : begin
+                                    register_read_enable_a  <= `READ_ENABLE;
+                                    register_read_enable_b  <= `READ_ENABLE;
+                                    operator                <= `OPERATOR_SUB;
+                                    category                <= `CATEGORY_ARITHMETIC;
+                                    register_write_enable   <= `WRITE_ENABLE;
+                                    instruction_valid       <= `INSTRUCTION_VALID;
+                                end
+                                `OPCODE_SUBU : begin
+                                    register_read_enable_a  <= `READ_ENABLE;
+                                    register_read_enable_b  <= `READ_ENABLE;
+                                    operator                <= `OPERATOR_SUBU;
+                                    category                <= `CATEGORY_ARITHMETIC;
+                                    register_write_enable   <= `WRITE_ENABLE;
+                                    instruction_valid       <= `INSTRUCTION_VALID;
+                                end
+                                // `OPCODE_MULT : begin
+                                //     register_read_enable_a  <= `READ_ENABLE;
+                                //     register_read_enable_b  <= `READ_ENABLE;
+                                //     operator                <= `OPERATOR_MULT;
+                                //     category                <= `CATEGORY_ARITHMETIC;
+                                //     register_write_enable   <= `WRITE_ENABLE;
+                                //     instruction_valid       <= `INSTRUCTION_VALID;
+                                // end
+                                // `OPCODE_MULTU : begin
+                                //     register_read_enable_a  <= `READ_ENABLE;
+                                //     register_read_enable_b  <= `READ_ENABLE;
+                                //     operator                <= `OPERATOR_MULTU;
+                                //     category                <= `CATEGORY_ARITHMETIC;
+                                //     register_write_enable   <= `WRITE_ENABLE;
+                                //     instruction_valid       <= `INSTRUCTION_VALID;
+                                // end
                                 default : begin
 
                                 end
                             endcase
                         end
                         default : begin
-                            
+
                         end
+                    endcase
+                end
+                6'b011100 : begin
+                    case (instruction[5:0])
+                        `OPCODE_CLZ : begin
+                            register_read_enable_a  <= `READ_ENABLE;
+                            register_read_enable_b  <= `READ_DISABLE;
+                            operator                <= `OPERATOR_CLZ;
+                            category                <= `CATEGORY_ARITHMETIC;
+                            register_write_enable   <= `WRITE_ENABLE;
+                            instruction_valid       <= `INSTRUCTION_VALID;
+                        end
+                        `OPCODE_CLO : begin
+                            register_read_enable_a  <= `READ_ENABLE;
+                            register_read_enable_b  <= `READ_DISABLE;
+                            operator                <= `OPERATOR_CLO;
+                            category                <= `CATEGORY_ARITHMETIC;
+                            register_write_enable   <= `WRITE_ENABLE;
+                            instruction_valid       <= `INSTRUCTION_VALID;
+                        end
+                        // `OPCODE_MUL : begin
+                        //     register_read_enable_a  <= `READ_ENABLE;
+                        //     register_read_enable_b  <= `READ_ENABLE;
+                        //     operator                <= `OPERATOR_MUL;
+                        //     category                <= `CATEGORY_ARITHMETIC;
+                        //     register_write_enable   <= `WRITE_ENABLE;
+                        //     instruction_valid       <= `INSTRUCTION_VALID;
+                        // end
                     endcase
                 end
                 `OPCODE_ANDI : begin
@@ -235,12 +327,52 @@ module stage_id(
                     immediate_value         <= {instruction[15:0], 16'b0};
                     instruction_valid       <= `INSTRUCTION_VALID;
                 end
-                `OPCODE_ORI : begin
+                `OPCODE_PREF : begin
                     register_read_enable_a  <= `READ_DISABLE;
                     register_read_enable_b  <= `READ_ENABLE;
                     operator                <= `OPERATOR_NOP;
                     category                <= `CATEGORY_NONE;
                     register_write_enable   <= `WRITE_DISABLE;
+                    instruction_valid       <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_SLTI : begin
+                    register_read_enable_a  <= `READ_ENABLE;
+                    register_read_enable_b  <= `READ_DISABLE;
+                    operator                <= `OPERATOR_SLT;
+                    category                <= `CATEGORY_ARITHMETIC;
+                    register_write_enable   <= `WRITE_ENABLE;
+                    register_write_address  <= instruction[20:16];
+                    immediate_value         <= {{16 {instruction[15]}}, instruction[15:0]};
+                    instruction_valid       <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_SLTIU : begin
+                    register_read_enable_a  <= `READ_ENABLE;
+                    register_read_enable_b  <= `READ_DISABLE;
+                    operator                <= `OPERATOR_SLTU;
+                    category                <= `CATEGORY_ARITHMETIC;
+                    register_write_enable   <= `WRITE_ENABLE;
+                    register_write_address  <= instruction[20:16];
+                    immediate_value         <= {{16 {instruction[15]}}, instruction[15:0]};
+                    instruction_valid       <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_ADDI : begin
+                    register_read_enable_a  <= `READ_ENABLE;
+                    register_read_enable_b  <= `READ_DISABLE;
+                    operator                <= `OPERATOR_ADD;
+                    category                <= `CATEGORY_ARITHMETIC;
+                    register_write_enable   <= `WRITE_ENABLE;
+                    register_write_address  <= instruction[20:16];
+                    immediate_value         <= {{16 {instruction[15]}}, instruction[15:0]};
+                    instruction_valid       <= `INSTRUCTION_VALID;
+                end
+                `OPCODE_ADDIU : begin
+                    register_read_enable_a  <= `READ_ENABLE;
+                    register_read_enable_b  <= `READ_DISABLE;
+                    operator                <= `OPERATOR_ADDU;
+                    category                <= `CATEGORY_ARITHMETIC;
+                    register_write_enable   <= `WRITE_ENABLE;
+                    register_write_address  <= instruction[20:16];
+                    immediate_value         <= {{16 {instruction[15]}}, instruction[15:0]};
                     instruction_valid       <= `INSTRUCTION_VALID;
                 end
                 default : begin
