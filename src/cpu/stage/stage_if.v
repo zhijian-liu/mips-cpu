@@ -1,6 +1,7 @@
 module stage_if(
     input   wire        clock,
     input   wire        reset,
+    input   wire[5:0]   stall,
 
     output  reg[31:0]   register_pc,
     output  reg         chip_enable
@@ -18,7 +19,7 @@ module stage_if(
         if (chip_enable == `CHIP_DISABLE) begin
             register_pc <= 32'b0;
         end
-        else begin
+        else if (stall[0] == `STALL_DISABLE) begin
             register_pc <= register_pc + 32'd4;
         end
     end

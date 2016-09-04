@@ -8,6 +8,8 @@
 `define WRITE_DISABLE           1'b0
 `define INSTRUCTION_VALID       1'b1
 `define INSTRUCTION_INVALID     1'b0
+`define STALL_ENABLE			1'b1
+`define STALL_DISABLE			1'b0
 
 `define OPCODE_AND              6'b100100
 `define OPCODE_OR               6'b100101

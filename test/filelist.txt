@@ -9,6 +9,7 @@
 ../src/cpu/latch/latch_ex_mem.v
 ../src/cpu/latch/latch_mem_wb.v
 ../src/cpu/register.v
+../src/cpu/control.v
 ../src/cpu/cpu.v
 ../src/rom.v
 ../src/sopc.v

@@ -38,7 +38,9 @@ module stage_id(
      */
     input   wire        mem_register_write_enable,
     input   wire[4:0]   mem_register_write_address,
-    input   wire[31:0]  mem_register_write_data
+    input   wire[31:0]  mem_register_write_data,
+
+    output  reg         stall_request
 );
     reg[31:0]   immediate_value;
     reg         instruction_valid;

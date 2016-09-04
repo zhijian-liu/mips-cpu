@@ -1,6 +1,7 @@
 module latch_if_id(
     input   wire        clock,
     input   wire        reset,
+    input   wire[5:0]   stall,
     
     input   wire[31:0]  if_register_pc,
     input   wire[31:0]  if_instruction,
@@ -13,7 +14,11 @@ module latch_if_id(
             id_register_pc <= 32'b0;
             id_instruction <= 32'b0;
         end
-        else begin
+        else if (stall[1] == `STALL_ENABLE && stall[2] == `STALL_DISABLE) begin
+            id_register_pc <= 32'b0;
+            id_instruction <= 32'b0;
+        end
+        else if (stall[1] == `STALL_DISABLE) begin
             id_register_pc <= if_register_pc;
             id_instruction <= if_instruction;
         end

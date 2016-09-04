@@ -34,7 +34,9 @@ module stage_ex(
     input   wire[31:0]  wb_register_hi_write_data,
     input   wire[31:0]  wb_register_lo_read_data,
     input   wire        wb_register_lo_write_enable,
-    input   wire[31:0]  wb_register_lo_write_data
+    input   wire[31:0]  wb_register_lo_write_data,
+
+    output  reg         stall_request
 );
     wire[31:0]  operand_a_complement;
     wire[31:0]  operand_b_complement;
