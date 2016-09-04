@@ -36,6 +36,10 @@ module stage_ex(
     input   wire        wb_register_lo_write_enable,
     input   wire[31:0]  wb_register_lo_write_data
 );
+    wire[31:0]  operand_b_complement;
+
+    assign operand_b_complement = (~operand_b) + 1;
+
     /**
      *  Update the newest version of the register `hi`.
      */
@@ -163,22 +167,23 @@ module stage_ex(
         end
     end
 
-    reg[31:0]   result_sum;
+
+    reg[31:0]   operand_sum;
 
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
-            result_sum <= 32'b0;
+            operand_sum <= 32'b0;
         end
         else begin
             case (operator)
                 `OPERATOR_SLT : begin
-                    result_sum <= operand_a + (~operand_b) + 1;
+                    operand_sum <= operand_a + operand_b_complement;
                 end
                 `OPERATOR_SUB, `OPERATOR_SUBU : begin
-                    result_sum <= operand_a + (~operand_b) + 1;
+                    operand_sum <= operand_a + operand_b_complement;
                 end
                 default : begin
-                    result_sum <= operand_a + operand_b;
+                    operand_sum <= operand_a + operand_b;
                 end
             endcase
         end
@@ -197,14 +202,17 @@ module stage_ex(
             case (operator)
                 `OPERATOR_SLT : begin
                     result_arithmetic <= (operand_a[31] && !operand_b[31]) ||
-                                         (!operand_a[31] && !operand_b[31] && result_sum[31]) ||
-                                         (operand_a[31] && operand_b[31] && result_sum[31]);
+                                         (!operand_a[31] && !operand_b[31] && operand_sum[31]) ||
+                                         (operand_a[31] && operand_b[31] && operand_sum[31]);
                 end
                 `OPERATOR_SLTU : begin
                     result_arithmetic <= operand_a < operand_b;
                 end
-                `OPERATOR_ADD, `OPERATOR_ADDU, `OPERATOR_SUB, `OPERATOR_SUBU : begin
-                    result_arithmetic <= result_sum;
+                `OPERATOR_ADD, `OPERATOR_ADDU : begin
+                    result_arithmetic <= operand_sum;
+                end
+                `OPERATOR_SUB, `OPERATOR_SUBU : begin
+                    result_arithmetic <= operand_sum;
                 end
                 `OPERATOR_CLZ : begin
                     result_arithmetic <= operand_a[31] ? 0 :
@@ -282,8 +290,32 @@ module stage_ex(
     end
 
     always @ (*) begin
-        register_write_enable_o     <= register_write_enable_i;
-        register_write_address_o    <= register_write_address_i;
+        case (operator)
+            `OPERATOR_ADD : begin
+                if ((!operand_a[31] && !operand_b[31] && operand_sum[31]) ||
+                    (operand_a[31] && operand_b[31] && !operand_sum[31])
+                ) begin
+                    register_write_enable_o <= `WRITE_DISABLE;
+                end
+                else begin
+                    register_write_enable_o <= register_write_enable_i;
+                end
+            end
+            `OPERATOR_SUB : begin
+                if ((!operand_a[31] && !operand_b_complement[31] && operand_sum[31]) ||
+                    (operand_a[31] && operand_b_complement[31] && !operand_sum[31])
+                ) begin
+                    register_write_enable_o <= `WRITE_DISABLE;
+                end
+                else begin
+                    register_write_enable_o <= register_write_enable_i;
+                end
+            end
+            default : begin
+                register_write_enable_o <= register_write_enable_i;
+            end
+        endcase
+        register_write_address_o <= register_write_address_i;
         
         case (category)
             `CATEGORY_LOGIC : begin
