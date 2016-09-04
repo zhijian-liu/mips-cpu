@@ -233,22 +233,22 @@ module stage_id(
                                     register_write_enable   <= `WRITE_ENABLE;
                                     instruction_valid       <= `INSTRUCTION_VALID;
                                 end
-                                // `OPCODE_MULT : begin
-                                //     register_read_enable_a  <= `READ_ENABLE;
-                                //     register_read_enable_b  <= `READ_ENABLE;
-                                //     operator                <= `OPERATOR_MULT;
-                                //     category                <= `CATEGORY_ARITHMETIC;
-                                //     register_write_enable   <= `WRITE_ENABLE;
-                                //     instruction_valid       <= `INSTRUCTION_VALID;
-                                // end
-                                // `OPCODE_MULTU : begin
-                                //     register_read_enable_a  <= `READ_ENABLE;
-                                //     register_read_enable_b  <= `READ_ENABLE;
-                                //     operator                <= `OPERATOR_MULTU;
-                                //     category                <= `CATEGORY_ARITHMETIC;
-                                //     register_write_enable   <= `WRITE_ENABLE;
-                                //     instruction_valid       <= `INSTRUCTION_VALID;
-                                // end
+                                `OPCODE_MULT : begin
+                                    register_read_enable_a  <= `READ_ENABLE;
+                                    register_read_enable_b  <= `READ_ENABLE;
+                                    operator                <= `OPERATOR_MULT;
+                                    category                <= `CATEGORY_ARITHMETIC;
+                                    register_write_enable   <= `WRITE_DISABLE;
+                                    instruction_valid       <= `INSTRUCTION_VALID;
+                                end
+                                `OPCODE_MULTU : begin
+                                    register_read_enable_a  <= `READ_ENABLE;
+                                    register_read_enable_b  <= `READ_ENABLE;
+                                    operator                <= `OPERATOR_MULTU;
+                                    category                <= `CATEGORY_ARITHMETIC;
+                                    register_write_enable   <= `WRITE_DISABLE;
+                                    instruction_valid       <= `INSTRUCTION_VALID;
+                                end
                                 default : begin
 
                                 end
@@ -277,14 +277,14 @@ module stage_id(
                             register_write_enable   <= `WRITE_ENABLE;
                             instruction_valid       <= `INSTRUCTION_VALID;
                         end
-                        // `OPCODE_MUL : begin
-                        //     register_read_enable_a  <= `READ_ENABLE;
-                        //     register_read_enable_b  <= `READ_ENABLE;
-                        //     operator                <= `OPERATOR_MUL;
-                        //     category                <= `CATEGORY_ARITHMETIC;
-                        //     register_write_enable   <= `WRITE_ENABLE;
-                        //     instruction_valid       <= `INSTRUCTION_VALID;
-                        // end
+                        `OPCODE_MUL : begin
+                            register_read_enable_a  <= `READ_ENABLE;
+                            register_read_enable_b  <= `READ_ENABLE;
+                            operator                <= `OPERATOR_MUL;
+                            category                <= `CATEGORY_ARITHMETIC;
+                            register_write_enable   <= `WRITE_ENABLE;
+                            instruction_valid       <= `INSTRUCTION_VALID;
+                        end
                     endcase
                 end
                 `OPCODE_ANDI : begin

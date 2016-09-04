@@ -36,9 +36,11 @@ module stage_ex(
     input   wire        wb_register_lo_write_enable,
     input   wire[31:0]  wb_register_lo_write_data
 );
+    wire[31:0]  operand_a_complement;
     wire[31:0]  operand_b_complement;
 
-    assign operand_b_complement = (~operand_b) + 1;
+    assign operand_a_complement = ~operand_a + 1;
+    assign operand_b_complement = ~operand_b + 1;
 
     /**
      *  Update the newest version of the register `hi`.
@@ -176,10 +178,7 @@ module stage_ex(
         end
         else begin
             case (operator)
-                `OPERATOR_SLT : begin
-                    operand_sum <= operand_a + operand_b_complement;
-                end
-                `OPERATOR_SUB, `OPERATOR_SUBU : begin
+                `OPERATOR_SLT, `OPERATOR_SUB, `OPERATOR_SUBU : begin
                     operand_sum <= operand_a + operand_b_complement;
                 end
                 default : begin
@@ -192,7 +191,7 @@ module stage_ex(
     /**
      *  Calculate the result for the arithmetic instructions.
      */
-    reg[31:0]   result_arithmetic;
+    reg[63:0]   result_arithmetic;
 
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
@@ -201,86 +200,100 @@ module stage_ex(
         else begin
             case (operator)
                 `OPERATOR_SLT : begin
-                    result_arithmetic <= (operand_a[31] && !operand_b[31]) ||
-                                         (!operand_a[31] && !operand_b[31] && operand_sum[31]) ||
-                                         (operand_a[31] && operand_b[31] && operand_sum[31]);
+                    result_arithmetic <= (operand_a[31] == 1'b1 && operand_b[31] == 1'b0) ||
+                                         (operand_a[31] == 1'b0 && operand_b[31] == 1'b0 && operand_sum[31] == 1'b1) ||
+                                         (operand_a[31] == 1'b1 && operand_b[31] == 1'b1 && operand_sum[31] == 1'b1);
                 end
                 `OPERATOR_SLTU : begin
                     result_arithmetic <= operand_a < operand_b;
                 end
-                `OPERATOR_ADD, `OPERATOR_ADDU : begin
-                    result_arithmetic <= operand_sum;
-                end
-                `OPERATOR_SUB, `OPERATOR_SUBU : begin
+                `OPERATOR_ADD, `OPERATOR_ADDU, `OPERATOR_SUB, `OPERATOR_SUBU : begin
                     result_arithmetic <= operand_sum;
                 end
                 `OPERATOR_CLZ : begin
-                    result_arithmetic <= operand_a[31] ? 0 :
-                                         operand_a[30] ? 1 :
-                                         operand_a[29] ? 2 :
-                                         operand_a[28] ? 3 :
-                                         operand_a[27] ? 4 :
-                                         operand_a[26] ? 5 :
-                                         operand_a[25] ? 6 :
-                                         operand_a[24] ? 7 :
-                                         operand_a[23] ? 8 :
-                                         operand_a[22] ? 9 :
-                                         operand_a[21] ? 10 :
-                                         operand_a[20] ? 11 :
-                                         operand_a[19] ? 12 :
-                                         operand_a[18] ? 13 :
-                                         operand_a[17] ? 14 :
-                                         operand_a[16] ? 15 :
-                                         operand_a[15] ? 16 :
-                                         operand_a[14] ? 17 :
-                                         operand_a[13] ? 18 :
-                                         operand_a[12] ? 19 :
-                                         operand_a[11] ? 20 :
-                                         operand_a[10] ? 21 :
-                                         operand_a[9] ? 22 :
-                                         operand_a[8] ? 23 :
-                                         operand_a[7] ? 24 :
-                                         operand_a[6] ? 25 :
-                                         operand_a[5] ? 26 :
-                                         operand_a[4] ? 27 :
-                                         operand_a[3] ? 28 :
-                                         operand_a[2] ? 29 :
-                                         operand_a[1] ? 30 :
-                                         operand_a[0] ? 31 : 32;
+                    result_arithmetic <= operand_a[31] == 1'b1 ? 32'd0 :
+                                         operand_a[30] == 1'b1 ? 32'd1 :
+                                         operand_a[29] == 1'b1 ? 32'd2 :
+                                         operand_a[28] == 1'b1 ? 32'd3 :
+                                         operand_a[27] == 1'b1 ? 32'd4 :
+                                         operand_a[26] == 1'b1 ? 32'd5 :
+                                         operand_a[25] == 1'b1 ? 32'd6 :
+                                         operand_a[24] == 1'b1 ? 32'd7 :
+                                         operand_a[23] == 1'b1 ? 32'd8 :
+                                         operand_a[22] == 1'b1 ? 32'd9 :
+                                         operand_a[21] == 1'b1 ? 32'd10 :
+                                         operand_a[20] == 1'b1 ? 32'd11 :
+                                         operand_a[19] == 1'b1 ? 32'd12 :
+                                         operand_a[18] == 1'b1 ? 32'd13 :
+                                         operand_a[17] == 1'b1 ? 32'd14 :
+                                         operand_a[16] == 1'b1 ? 32'd15 :
+                                         operand_a[15] == 1'b1 ? 32'd16 :
+                                         operand_a[14] == 1'b1 ? 32'd17 :
+                                         operand_a[13] == 1'b1 ? 32'd18 :
+                                         operand_a[12] == 1'b1 ? 32'd19 :
+                                         operand_a[11] == 1'b1 ? 32'd20 :
+                                         operand_a[10] == 1'b1 ? 32'd21 :
+                                         operand_a[9] == 1'b1 ? 32'd22 :
+                                         operand_a[8] == 1'b1 ? 32'd23 :
+                                         operand_a[7] == 1'b1 ? 32'd24 :
+                                         operand_a[6] == 1'b1 ? 32'd25 :
+                                         operand_a[5] == 1'b1 ? 32'd26 :
+                                         operand_a[4] == 1'b1 ? 32'd27 :
+                                         operand_a[3] == 1'b1 ? 32'd28 :
+                                         operand_a[2] == 1'b1 ? 32'd29 :
+                                         operand_a[1] == 1'b1 ? 32'd30 :
+                                         operand_a[0] == 1'b1 ? 32'd31 : 32'd32;
                 end
                 `OPERATOR_CLO : begin
-                    result_arithmetic <= !operand_a[31] ? 0 :
-                                         !operand_a[30] ? 1 :
-                                         !operand_a[29] ? 2 :
-                                         !operand_a[28] ? 3 :
-                                         !operand_a[27] ? 4 :
-                                         !operand_a[26] ? 5 :
-                                         !operand_a[25] ? 6 :
-                                         !operand_a[24] ? 7 :
-                                         !operand_a[23] ? 8 :
-                                         !operand_a[22] ? 9 :
-                                         !operand_a[21] ? 10 :
-                                         !operand_a[20] ? 11 :
-                                         !operand_a[19] ? 12 :
-                                         !operand_a[18] ? 13 :
-                                         !operand_a[17] ? 14 :
-                                         !operand_a[16] ? 15 :
-                                         !operand_a[15] ? 16 :
-                                         !operand_a[14] ? 17 :
-                                         !operand_a[13] ? 18 :
-                                         !operand_a[12] ? 19 :
-                                         !operand_a[11] ? 20 :
-                                         !operand_a[10] ? 21 :
-                                         !operand_a[9] ? 22 :
-                                         !operand_a[8] ? 23 :
-                                         !operand_a[7] ? 24 :
-                                         !operand_a[6] ? 25 :
-                                         !operand_a[5] ? 26 :
-                                         !operand_a[4] ? 27 :
-                                         !operand_a[3] ? 28 :
-                                         !operand_a[2] ? 29 :
-                                         !operand_a[1] ? 30 :
-                                         !operand_a[0] ? 31 : 32;
+                    result_arithmetic <= operand_a[31] == 1'b0 ? 32'd0 :
+                                         operand_a[30] == 1'b0 ? 32'd1 :
+                                         operand_a[29] == 1'b0 ? 32'd2 :
+                                         operand_a[28] == 1'b0 ? 32'd3 :
+                                         operand_a[27] == 1'b0 ? 32'd4 :
+                                         operand_a[26] == 1'b0 ? 32'd5 :
+                                         operand_a[25] == 1'b0 ? 32'd6 :
+                                         operand_a[24] == 1'b0 ? 32'd7 :
+                                         operand_a[23] == 1'b0 ? 32'd8 :
+                                         operand_a[22] == 1'b0 ? 32'd9 :
+                                         operand_a[21] == 1'b0 ? 32'd10 :
+                                         operand_a[20] == 1'b0 ? 32'd11 :
+                                         operand_a[19] == 1'b0 ? 32'd12 :
+                                         operand_a[18] == 1'b0 ? 32'd13 :
+                                         operand_a[17] == 1'b0 ? 32'd14 :
+                                         operand_a[16] == 1'b0 ? 32'd15 :
+                                         operand_a[15] == 1'b0 ? 32'd16 :
+                                         operand_a[14] == 1'b0 ? 32'd17 :
+                                         operand_a[13] == 1'b0 ? 32'd18 :
+                                         operand_a[12] == 1'b0 ? 32'd19 :
+                                         operand_a[11] == 1'b0 ? 32'd20 :
+                                         operand_a[10] == 1'b0 ? 32'd21 :
+                                         operand_a[9] == 1'b0 ? 32'd22 :
+                                         operand_a[8] == 1'b0 ? 32'd23 :
+                                         operand_a[7] == 1'b0 ? 32'd24 :
+                                         operand_a[6] == 1'b0 ? 32'd25 :
+                                         operand_a[5] == 1'b0 ? 32'd26 :
+                                         operand_a[4] == 1'b0 ? 32'd27 :
+                                         operand_a[3] == 1'b0 ? 32'd28 :
+                                         operand_a[2] == 1'b0 ? 32'd29 :
+                                         operand_a[1] == 1'b0 ? 32'd30 :
+                                         operand_a[0] == 1'b0 ? 32'd31 : 32'd32;
+                end
+                `OPERATOR_MULT, `OPERATOR_MUL : begin
+                	if (operand_a[31] == 1'b0 && operand_b[31] == 1'b0) begin
+                		result_arithmetic <= operand_a * operand_b;
+                	end
+                	else if (operand_a[31] == 1'b0 && operand_b[31] == 1'b1) begin
+                		result_arithmetic <= ~(operand_a * operand_b_complement) + 1;
+                	end
+                	else if (operand_a[31] == 1'b1 && operand_b[31] == 1'b0) begin
+                		result_arithmetic <= ~(operand_a_complement * operand_b) + 1;
+                	end
+                	else if (operand_a[31] == 1'b1 && operand_b[31] == 1'b1) begin
+                		result_arithmetic <= operand_a_complement * operand_b_complement;
+                	end
+                end
+                `OPERATOR_MULTU : begin
+            		result_arithmetic <= operand_a * operand_b;
                 end
                 default : begin
                     result_arithmetic <= 32'b0;
@@ -292,8 +305,8 @@ module stage_ex(
     always @ (*) begin
         case (operator)
             `OPERATOR_ADD : begin
-                if ((!operand_a[31] && !operand_b[31] && operand_sum[31]) ||
-                    (operand_a[31] && operand_b[31] && !operand_sum[31])
+                if ((operand_a[31] == 1'b0 && operand_b[31] == 1'b0 && operand_sum[31] == 1'b1) ||
+                    (operand_a[31] == 1'b1 && operand_b[31] == 1'b1 && operand_sum[31] == 1'b0)
                 ) begin
                     register_write_enable_o <= `WRITE_DISABLE;
                 end
@@ -302,8 +315,8 @@ module stage_ex(
                 end
             end
             `OPERATOR_SUB : begin
-                if ((!operand_a[31] && !operand_b_complement[31] && operand_sum[31]) ||
-                    (operand_a[31] && operand_b_complement[31] && !operand_sum[31])
+                if ((operand_a[31] == 1'b0 && operand_b_complement[31] == 1'b0 && operand_sum[31] == 1'b1) ||
+                    (operand_a[31] == 1'b1 && operand_b_complement[31] == 1'b1 && operand_sum[31] == 1'b0)
                 ) begin
                     register_write_enable_o <= `WRITE_DISABLE;
                 end
@@ -328,7 +341,7 @@ module stage_ex(
                 register_write_data <= result_move;
             end
             `CATEGORY_ARITHMETIC : begin
-                register_write_data <= result_arithmetic;
+                register_write_data <= result_arithmetic[31:0];
             end
             default : begin
                 register_write_data <= 32'b0;
@@ -356,6 +369,12 @@ module stage_ex(
                     register_hi_write_data      <= 32'b0;
                     register_lo_write_enable    <= `WRITE_ENABLE;
                     register_lo_write_data      <= operand_a;
+                end
+                `OPERATOR_MULT, `OPERATOR_MULTU : begin
+                    register_hi_write_enable    <= `WRITE_ENABLE;
+                    register_hi_write_data      <= result_arithmetic[63:32];
+                    register_lo_write_enable    <= `WRITE_ENABLE;
+                    register_lo_write_data      <= result_arithmetic[31:0];
                 end
                 default : begin
                     register_hi_write_enable    <= `WRITE_DISABLE;

@@ -43,9 +43,9 @@
 `define OPCODE_ADDIU 			6'b001001
 `define OPCODE_CLZ   			6'b100000
 `define OPCODE_CLO   			6'b100001
-// `define OPCODE_MULT  			6'b011000
-// `define OPCODE_MULTU 			6'b011001
-// `define OPCODE_MUL   			6'b000010
+`define OPCODE_MULT  			6'b011000
+`define OPCODE_MULTU 			6'b011001
+`define OPCODE_MUL   			6'b000010
 
 `define OPERATOR_NOP            8'b00000000
 `define OPERATOR_AND            8'b00000001
@@ -69,9 +69,9 @@
 `define OPERATOR_SUBU  			8'b00010011
 `define OPERATOR_CLZ   			8'b00010100
 `define OPERATOR_CLO   			8'b00010101
-// `define OPERATOR_MULT  			8'b00000000
-// `define OPERATOR_MULTU 			8'b00000000
-// `define OPERATOR_MUL   			8'b00000000
+`define OPERATOR_MULT  			8'b00010110
+`define OPERATOR_MULTU 			8'b00010111
+`define OPERATOR_MUL   			8'b00011000
 
 `define CATEGORY_NONE           3'b000
 `define CATEGORY_LOGIC          3'b001
