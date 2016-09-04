@@ -7,11 +7,11 @@ module cpu(
     output  wire[31:0]  rom_address,
     input   wire[31:0]  rom_data
 );
-    wire[5:0]   stall;
+    wire[5:0]   control_stall;
 
-    wire[31:0]  register_pc;
+    wire[31:0]  if_register_pc_read_data;
 
-    wire[31:0]  id_register_pc;
+    wire[31:0]  id_register_pc_read_data;
     wire[31:0]  id_instruction;
     wire[7:0]   id_operator;
     wire[2:0]   id_category;
@@ -50,7 +50,6 @@ module cpu(
     wire[31:0]  mem_register_hi_write_data_i;
     wire        mem_register_lo_write_enable_i;
     wire[31:0]  mem_register_lo_write_data_i;
-
     wire        mem_register_write_enable_o;
     wire[4:0]   mem_register_write_address_o;
     wire[31:0]  mem_register_write_data_o;
@@ -73,33 +72,33 @@ module cpu(
         .reset(reset),
         .id_stall_request(id_stall_request),
         .ex_stall_request(ex_stall_request),
-        .stall(stall)
+        .stall(control_stall)
     );
 
     stage_if stage_if(
         .clock(clock),
         .reset(reset),
-        .stall(stall),
-        .register_pc(register_pc),
-        .chip_enable(rom_chip_enable)
+        .stall(control_stall),
+        .chip_enable(rom_chip_enable),
+        .register_pc_read_data(if_register_pc_read_data)
     );
 
-    assign rom_address = register_pc;
+    assign rom_address = if_register_pc_read_data;
 
     latch_if_id latch_if_id(
         .clock(clock),
         .reset(reset),
-        .stall(stall),
-        .if_register_pc(register_pc),
+        .stall(control_stall),
+        .if_register_pc_read_data(if_register_pc_read_data),
         .if_instruction(rom_data),
-        .id_register_pc(id_register_pc),
+        .id_register_pc_read_data(id_register_pc_read_data),
         .id_instruction(id_instruction)
     );
 
     stage_id stage_id(
         .reset(reset),
-        .register_pc(id_register_pc),
         .instruction(id_instruction),
+        .register_pc_read_data(id_register_pc_read_data),
         .register_read_enable_a(register_read_enable_a),
         .register_read_address_a(register_read_address_a),
         .register_read_data_a(register_read_data_a),
@@ -138,7 +137,7 @@ module cpu(
     latch_id_ex latch_id_ex(
         .clock(clock),
         .reset(reset),
-        .stall(stall),
+        .stall(control_stall),
         .id_operator(id_operator),
         .id_category(id_category),
         .id_operand_a(id_operand_a),
@@ -184,7 +183,7 @@ module cpu(
     latch_ex_mem latch_ex_mem(
         .clock(clock),
         .reset(reset),
-        .stall(stall),
+        .stall(control_stall),
         .ex_register_write_enable(ex_register_write_enable_o),
         .ex_register_write_address(ex_register_write_address_o),
         .ex_register_write_data(ex_register_write_data),
@@ -222,7 +221,7 @@ module cpu(
     latch_mem_wb latch_mem_wb(
         .clock(clock),
         .reset(reset),
-        .stall(stall),
+        .stall(control_stall),
         .mem_register_write_enable(mem_register_write_enable_o),
         .mem_register_write_address(mem_register_write_address_o),
         .mem_register_write_data(mem_register_write_data_o),

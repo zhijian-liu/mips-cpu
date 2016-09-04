@@ -1,8 +1,9 @@
 module stage_id(
     input   wire        reset,
 
-    input   wire[31:0]  register_pc,
     input   wire[31:0]  instruction,
+
+    input   wire[31:0]  register_pc_read_data,
     
     /**
      *  Register read port A.
