@@ -3,6 +3,7 @@ module latch_id_ex(
     input   wire        reset,
     input   wire[5:0]   stall,
 
+    input   wire[31:0]  id_instruction,
     input   wire[7:0]   id_operator,
     input   wire[2:0]   id_category,
     input   wire[31:0]  id_operand_a,
@@ -11,6 +12,7 @@ module latch_id_ex(
     input   wire[4:0]   id_register_write_address,
     input   wire[31:0]  id_register_write_data,
 
+    output  reg[31:0]   ex_instruction,
     output  reg[7:0]    ex_operator,
     output  reg[2:0]    ex_category,
     output  reg[31:0]   ex_operand_a,
@@ -21,8 +23,9 @@ module latch_id_ex(
 );
     always @ (posedge clock) begin
         if (reset == `RESET_ENABLE) begin
-            ex_operator                 <= 8'b0;
-            ex_category                 <= 3'b0;
+            ex_instruction              <= 32'b0;
+            ex_operator                 <= `OPERATOR_NOP;
+            ex_category                 <= `CATEGORY_NONE;
             ex_operand_a                <= 32'b0;
             ex_operand_b                <= 32'b0;
             ex_register_write_enable    <= `WRITE_DISABLE;
@@ -30,8 +33,9 @@ module latch_id_ex(
             ex_register_write_data      <= 32'b0;
         end
         else if (stall[2] == `STALL_ENABLE && stall[3] == `STALL_DISABLE) begin
-            ex_operator                 <= 8'b0;
-            ex_category                 <= 3'b0;
+            ex_instruction              <= 32'b0;
+            ex_operator                 <= `OPERATOR_NOP;
+            ex_category                 <= `CATEGORY_NONE;
             ex_operand_a                <= 32'b0;
             ex_operand_b                <= 32'b0;
             ex_register_write_enable    <= `WRITE_DISABLE;
@@ -39,6 +43,7 @@ module latch_id_ex(
             ex_register_write_data      <= 32'b0;
         end
         else if (stall[2] == `STALL_DISABLE) begin
+            ex_instruction              <= id_instruction;
             ex_operator                 <= id_operator;
             ex_category                 <= id_category;
             ex_operand_a                <= id_operand_a;

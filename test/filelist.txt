@@ -12,5 +12,6 @@
 ../src/cpu/control.v
 ../src/cpu/cpu.v
 ../src/rom.v
+../src/ram.v
 ../src/sopc.v
 ./testbench.v

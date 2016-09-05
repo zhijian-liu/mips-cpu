@@ -1,9 +1,50 @@
 `timescale 1ns/1ps
 
 module test_bench();
-    reg         clock;
-    reg         reset;
+    reg     clock;
+    reg     reset;
 
+    initial begin
+        clock = 1'b0;
+        forever begin
+            #10 clock = ~clock;
+        end
+    end
+
+    initial begin
+        reset = 1'b1;
+        #195    reset = 1'b0;
+        #1000   $finish;
+    end
+
+    sopc sopc(
+        .clock(clock),
+        .reset(reset)
+    );
+
+    initial begin: initialize_rom
+        $readmemh("assembler/rom.txt", sopc.rom.storage);
+    end
+    
+    initial begin: initialize_ram
+        integer i;
+        for (i = 0; i < 1024; ++i) begin
+            sopc.ram.storage[i] = 32'b0;
+        end
+    end
+
+    initial begin: initialize_register
+        integer i;
+        for (i = 0; i < 32; ++i) begin
+            sopc.cpu.register.storage[i] = 32'b0;
+        end
+    end
+
+    initial begin
+        $dumpfile("simulation.vcd");
+        $dumpvars;
+    end
+    
     wire[31:0]  register_0;
     wire[31:0]  register_1;
     wire[31:0]  register_2;
@@ -40,29 +81,6 @@ module test_bench();
     wire[31:0]  register_hi;
     wire[31:0]  register_lo;
 
-    initial begin
-        clock = 0;
-        forever begin
-            #10 clock = ~clock;
-        end
-    end
-
-    initial begin
-        reset = 1;
-        #195    reset = 0;
-        #1000   $finish;
-    end
-
-    initial begin
-        $dumpfile("simulation.vcd");
-        $dumpvars;
-    end
-
-    sopc sopc(
-        .clock(clock),
-        .reset(reset)
-    );
-
     assign register_0  = sopc.cpu.register.storage[0];
     assign register_1  = sopc.cpu.register.storage[1];
     assign register_2  = sopc.cpu.register.storage[2];
@@ -98,8 +116,4 @@ module test_bench();
     assign register_pc = sopc.cpu.stage_if.register_pc_read_data;
     assign register_hi = sopc.cpu.stage_wb.register_hi_read_data;
     assign register_lo = sopc.cpu.stage_wb.register_lo_read_data;
-
-    initial begin
-        $readmemh("assembler/rom.txt", sopc.rom.storage);
-    end
 endmodule
