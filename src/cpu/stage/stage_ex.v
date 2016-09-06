@@ -1,58 +1,51 @@
 module stage_ex(
-    input   wire        reset,
-
-    input   wire[31:0]  instruction_i,
-    output  wire[31:0]  instruction_o,
-    input   wire[7:0]   operator_i,
-    output  wire[7:0]   operator_o,
-    input   wire[2:0]   category,
-    input   wire[31:0]  operand_a_i,
-    output  wire[31:0]  operand_a_o,
-    input   wire[31:0]  operand_b_i,
-    output  wire[31:0]  operand_b_o,
-    
-    input   wire        register_write_enable_i,
-    output  reg         register_write_enable_o,
-    input   wire[4:0]   register_write_address_i,
-    output  reg[4:0]    register_write_address_o,
-    input   wire[31:0]  register_write_data_i,
-    output  reg[31:0]   register_write_data_o,
-
-    output  reg         register_hi_write_enable,
-    output  reg[31:0]   register_hi_write_data,
-    output  reg         register_lo_write_enable,
-    output  reg[31:0]   register_lo_write_data,
-
-    input   wire        mem_register_hi_write_enable,
-    input   wire[31:0]  mem_register_hi_write_data,
-    input   wire        mem_register_lo_write_enable,
-    input   wire[31:0]  mem_register_lo_write_data,
-
-    input   wire[31:0]  wb_register_hi_read_data,
-    input   wire        wb_register_hi_write_enable,
-    input   wire[31:0]  wb_register_hi_write_data,
-    input   wire[31:0]  wb_register_lo_read_data,
-    input   wire        wb_register_lo_write_enable,
-    input   wire[31:0]  wb_register_lo_write_data,
-
-    output  reg         stall_request
+    input             reset                       ,
+    input      [31:0] instruction_i               ,
+    output     [31:0] instruction_o               ,
+    input      [ 7:0] operator_i                  ,
+    output     [ 7:0] operator_o                  ,
+    input      [ 2:0] category                    ,
+    input      [31:0] operand_a_i                 ,
+    output     [31:0] operand_a_o                 ,
+    input      [31:0] operand_b_i                 ,
+    output     [31:0] operand_b_o                 ,
+    input             register_write_enable_i     ,
+    output reg        register_write_enable_o     ,
+    input      [ 4:0] register_write_address_i    ,
+    output reg [ 4:0] register_write_address_o    ,
+    input      [31:0] register_write_data_i       ,
+    output reg [31:0] register_write_data_o       ,
+    output reg        register_hi_write_enable    ,
+    output reg [31:0] register_hi_write_data      ,
+    output reg        register_lo_write_enable    ,
+    output reg [31:0] register_lo_write_data      ,
+    input             mem_register_hi_write_enable,
+    input      [31:0] mem_register_hi_write_data  ,
+    input             mem_register_lo_write_enable,
+    input      [31:0] mem_register_lo_write_data  ,
+    input      [31:0] wb_register_hi_read_data    ,
+    input             wb_register_hi_write_enable ,
+    input      [31:0] wb_register_hi_write_data   ,
+    input      [31:0] wb_register_lo_read_data    ,
+    input             wb_register_lo_write_enable ,
+    input      [31:0] wb_register_lo_write_data   ,
+    output reg        stall_request                
 );
-// 
-    wire[31:0]  operand_a_complement;
-    wire[31:0]  operand_b_complement;
+    wire [31:0] operand_a_complement = ~operand_a_i + 1;
+    wire [31:0] operand_b_complement = ~operand_b_i + 1;
+    wire [31:0] operand_sum          = operand_a_i + (operator_i == `OPERATOR_SLT  ||
+                                                      operator_i == `OPERATOR_SUB  ||
+                                                      operator_i == `OPERATOR_SUBU ?
+                                                      operand_b_complement :
+                                                      operand_b_i
+                                                     );
 
-    assign operand_a_complement = ~operand_a_i + 1;
-    assign operand_b_complement = ~operand_b_i + 1;
+    assign instruction_o = instruction_i;
+    assign operator_o    = operator_i   ;
+    assign operand_a_o   = operand_a_i  ;
+    assign operand_b_o   = operand_b_i  ;
 
-// 
-    assign instruction_o    = instruction_i;
-    assign operator_o       = operator_i;
-    assign operand_a_o      = operand_a_i;
-    assign operand_b_o      = operand_b_i;
-
-// 
-    reg[31:0]   register_hi;
-
+    reg [31:0] register_hi;
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
             register_hi <= 32'b0;
@@ -68,9 +61,7 @@ module stage_ex(
         end
     end
 
-// 
-    reg[31:0]   register_lo;
-
+    reg [31:0] register_lo;
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
             register_lo <= 32'b0;
@@ -86,9 +77,7 @@ module stage_ex(
         end
     end
 
-// 
-    reg[31:0]   result_logic;
-
+    reg [31:0] result_logic;
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
             result_logic <= 32'b0;
@@ -114,9 +103,7 @@ module stage_ex(
         end
     end
 
-// 
-    reg[31:0]   result_shift;
-
+    reg [31:0] result_shift;
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
             result_shift <= 32'b0;
@@ -139,9 +126,7 @@ module stage_ex(
         end
     end
 
-// 
-    reg[31:0]   result_move;
-
+    reg [31:0] result_move;
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
             result_move <= 32'b0;
@@ -167,28 +152,7 @@ module stage_ex(
         end
     end
 
-// 
-    reg[31:0]   operand_sum;
-
-    always @ (*) begin
-        if (reset == `RESET_ENABLE) begin
-            operand_sum <= 32'b0;
-        end
-        else begin
-            case (operator_i)
-                `OPERATOR_SLT, `OPERATOR_SUB, `OPERATOR_SUBU : begin
-                    operand_sum <= operand_a_i + operand_b_complement;
-                end
-                default : begin
-                    operand_sum <= operand_a_i + operand_b_i;
-                end
-            endcase
-        end
-    end
-
-// 
-    reg[63:0]   result_arithmetic;
-
+    reg [63:0] result_arithmetic;
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
             result_arithmetic <= 32'b0;
@@ -196,7 +160,7 @@ module stage_ex(
         else begin
             case (operator_i)
                 `OPERATOR_SLT : begin
-                    result_arithmetic <= (operand_a_i[31] == 1'b1 && operand_b_i[31] == 1'b0) ||
+                    result_arithmetic <= (operand_a_i[31] == 1'b1 && operand_b_i[31] == 1'b0)                            ||
                                          (operand_a_i[31] == 1'b0 && operand_b_i[31] == 1'b0 && operand_sum[31] == 1'b1) ||
                                          (operand_a_i[31] == 1'b1 && operand_b_i[31] == 1'b1 && operand_sum[31] == 1'b1);
                 end
@@ -238,7 +202,8 @@ module stage_ex(
                                          operand_a_i[3]  == 1'b1 ? 32'd28 :
                                          operand_a_i[2]  == 1'b1 ? 32'd29 :
                                          operand_a_i[1]  == 1'b1 ? 32'd30 :
-                                         operand_a_i[0]  == 1'b1 ? 32'd31 : 32'd32;
+                                         operand_a_i[0]  == 1'b1 ? 32'd31 :
+                                                                   32'd32 ;
                 end
                 `OPERATOR_CLO : begin
                     result_arithmetic <= operand_a_i[31] == 1'b0 ? 32'd0 :
@@ -272,7 +237,8 @@ module stage_ex(
                                          operand_a_i[3]  == 1'b0 ? 32'd28 :
                                          operand_a_i[2]  == 1'b0 ? 32'd29 :
                                          operand_a_i[1]  == 1'b0 ? 32'd30 :
-                                         operand_a_i[0]  == 1'b0 ? 32'd31 : 32'd32;
+                                         operand_a_i[0]  == 1'b0 ? 32'd31 :
+                                                                   32'd32 ;
                 end
                 `OPERATOR_MULT, `OPERATOR_MUL : begin
                 	if (operand_a_i[31] == 1'b0 && operand_b_i[31] == 1'b0) begin
@@ -298,9 +264,7 @@ module stage_ex(
         end
     end
 
-// 
-    reg[31:0]   result_jump;
-
+    reg [31:0] result_jump;
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
             result_jump <= 32'b0;
@@ -310,7 +274,6 @@ module stage_ex(
         end
     end
 
-// 
     always @ (*) begin
         case (operator_i)
             `OPERATOR_ADD : begin
@@ -361,39 +324,38 @@ module stage_ex(
         endcase
     end
 
-// 
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
-            register_hi_write_enable    <= `WRITE_DISABLE;
-            register_hi_write_data      <= 32'b0;
-            register_lo_write_enable    <= `WRITE_DISABLE;
-            register_lo_write_data      <= 32'b0;
+            register_hi_write_enable <= `WRITE_DISABLE;
+            register_hi_write_data   <= 32'b0         ;
+            register_lo_write_enable <= `WRITE_DISABLE;
+            register_lo_write_data   <= 32'b0         ;
         end
         else begin
             case (operator_i)
                 `OPERATOR_MTHI : begin
-                    register_hi_write_enable    <= `WRITE_ENABLE;
-                    register_hi_write_data      <= operand_a_i;
-                    register_lo_write_enable    <= `WRITE_DISABLE;
-                    register_lo_write_data      <= 32'b0;
+                    register_hi_write_enable <= `WRITE_ENABLE ;
+                    register_hi_write_data   <= operand_a_i   ;
+                    register_lo_write_enable <= `WRITE_DISABLE;
+                    register_lo_write_data   <= 32'b0         ;
                 end
                 `OPERATOR_MTLO : begin
-                    register_hi_write_enable    <= `WRITE_DISABLE;
-                    register_hi_write_data      <= 32'b0;
-                    register_lo_write_enable    <= `WRITE_ENABLE;
-                    register_lo_write_data      <= operand_a_i;
+                    register_hi_write_enable <= `WRITE_DISABLE;
+                    register_hi_write_data   <= 32'b0         ;
+                    register_lo_write_enable <= `WRITE_ENABLE ;
+                    register_lo_write_data   <= operand_a_i   ;
                 end
                 `OPERATOR_MULT, `OPERATOR_MULTU : begin
-                    register_hi_write_enable    <= `WRITE_ENABLE;
-                    register_hi_write_data      <= result_arithmetic[63:32];
-                    register_lo_write_enable    <= `WRITE_ENABLE;
-                    register_lo_write_data      <= result_arithmetic[31:0];
+                    register_hi_write_enable <= `WRITE_ENABLE           ;
+                    register_hi_write_data   <= result_arithmetic[63:32];
+                    register_lo_write_enable <= `WRITE_ENABLE           ;
+                    register_lo_write_data   <= result_arithmetic[31:0] ;
                 end
                 default : begin
-                    register_hi_write_enable    <= `WRITE_DISABLE;
-                    register_hi_write_data      <= 32'b0;
-                    register_lo_write_enable    <= `WRITE_DISABLE;
-                    register_lo_write_data      <= 32'b0;
+                    register_hi_write_enable <= `WRITE_DISABLE;
+                    register_hi_write_data   <= 32'b0         ;
+                    register_lo_write_enable <= `WRITE_DISABLE;
+                    register_lo_write_data   <= 32'b0         ;
                 end
             endcase
         end

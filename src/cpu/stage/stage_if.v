@@ -1,11 +1,10 @@
 module stage_if(
-    input   wire        clock,
-    input   wire        reset,
-    input   wire[5:0]   stall,
-
-    input   wire        register_pc_write_enable,
-    input   wire[31:0]  register_pc_write_data,
-    output  reg[31:0]   register_pc_read_data
+    input             clock                   ,
+    input             reset                   ,
+    input      [ 5:0] stall                   ,
+    input             register_pc_write_enable,
+    input      [31:0] register_pc_write_data  ,
+    output reg [31:0] register_pc_read_data    
 );
     always @ (posedge clock) begin
         if (reset == `RESET_ENABLE) begin
