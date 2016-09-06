@@ -1,9 +1,5 @@
 all:
-	cd assembler && python assembler.py
-	iverilog -c filelist.txt -o testbench.vvp
-	vvp testbench.vvp
-	rm testbench.vvp
-	cd assembler && rm rom.txt
+	cd memory-1 && make all
 
 clean:
-	rm simulation.vcd
+	rm -rf */test.vcd

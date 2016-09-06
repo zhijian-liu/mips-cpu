@@ -1,47 +1,43 @@
 module stage_id(
-    input   wire        reset,
+    input   wire        reset                     ,
 
-    input   wire[31:0]  instruction_i,
-    output  wire[31:0]  instruction_o,
+    input   wire[31:0]  instruction_i             ,
+    output  wire[31:0]  instruction_o             ,
 
-    input   wire[31:0]  register_pc_read_data,
-    output  reg         register_pc_write_enable,
-    output  reg[31:0]   register_pc_write_data,
+    input   wire[31:0]  register_pc_read_data     ,
+    output  reg         register_pc_write_enable  ,
+    output  reg[31:0]   register_pc_write_data    ,
 
-    output  reg         register_read_enable_a,
-    output  reg[4:0]    register_read_address_a,
-    input   wire[31:0]  register_read_data_a,
+    output  reg         register_read_enable_a    ,
+    output  reg[4:0]    register_read_address_a   ,
+    input   wire[31:0]  register_read_data_a      ,
 
-    output  reg         register_read_enable_b,
-    output  reg[4:0]    register_read_address_b,
-    input   wire[31:0]  register_read_data_b,
+    output  reg         register_read_enable_b    ,
+    output  reg[4:0]    register_read_address_b   ,
+    input   wire[31:0]  register_read_data_b      ,
     
-    output  reg[7:0]    operator,
-    output  reg[2:0]    category,
-    output  reg[31:0]   operand_a,
-    output  reg[31:0]   operand_b,
+    output  reg[7:0]    operator                  ,
+    output  reg[2:0]    category                  ,
+    output  reg[31:0]   operand_a                 ,
+    output  reg[31:0]   operand_b                 ,
 
-    output  reg         register_write_enable,
-    output  reg[4:0]    register_write_address,
-    output  reg[31:0]   register_write_data,
+    output  reg         register_write_enable     ,
+    output  reg[4:0]    register_write_address    ,
+    output  reg[31:0]   register_write_data       ,
 
-    input   wire[2:0]   ex_category,
-    input   wire        ex_register_write_enable,
-    input   wire[4:0]   ex_register_write_address,
-    input   wire[31:0]  ex_register_write_data,
+    input   wire[7:0]   ex_operator               ,
+    input   wire        ex_register_write_enable  ,
+    input   wire[4:0]   ex_register_write_address ,
+    input   wire[31:0]  ex_register_write_data    ,
 
-    input   wire        mem_register_write_enable,
+    input   wire        mem_register_write_enable ,
     input   wire[4:0]   mem_register_write_address,
-    input   wire[31:0]  mem_register_write_data,
+    input   wire[31:0]  mem_register_write_data   ,
 
     output  reg         stall_request
 );
-// 
-    wire[31:0]  register_pc_next;
+    wire [31:0] register_pc_next = register_pc_read_data + 32'd4;
 
-    assign register_pc_next = register_pc_read_data + 32'd4;
-
-// 
     assign instruction_o = instruction_i;
 
 // 
@@ -50,18 +46,18 @@ module stage_id(
 
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
-            register_pc_write_enable    <= `WRITE_DISABLE;
-            register_pc_write_data      <= 32'b0;
-            register_read_enable_a      <= `READ_DISABLE;
-            register_read_address_a     <= 5'b0;
-            register_read_enable_b      <= `READ_DISABLE;
-            register_read_address_b     <= 5'b0;
-            operator                    <= `OPERATOR_NOP;
-            category                    <= `CATEGORY_NONE;
-            register_write_enable       <= `WRITE_DISABLE;
-            register_write_address      <= 5'b0;
-            register_write_data         <= 32'b0;
-            immediate_value             <= 32'b0;
+            register_pc_write_enable <= `WRITE_DISABLE;
+            register_pc_write_data   <= 32'b0         ;
+            register_read_enable_a   <= `READ_DISABLE ;
+            register_read_address_a  <= 5'b0          ;
+            register_read_enable_b   <= `READ_DISABLE ;
+            register_read_address_b  <= 5'b0          ;
+            operator                 <= `OPERATOR_NOP ;
+            category                 <= `CATEGORY_NONE;
+            register_write_enable    <= `WRITE_DISABLE;
+            register_write_address   <= 5'b0          ;
+            register_write_data      <= 32'b0         ;
+            immediate_value          <= 32'b0         ;
             // instruction_valid           <= `INSTRUCTION_VALID;
         end
         else begin
@@ -674,14 +670,30 @@ module stage_id(
         else begin
             if (
                 register_read_enable_a == `READ_ENABLE &&
-                ex_category == `CATEGORY_MEMORY &&
+                (
+                    ex_operator == `OPERATOR_LB  ||
+                    ex_operator == `OPERATOR_LBU ||
+                    ex_operator == `OPERATOR_LH  ||
+                    ex_operator == `OPERATOR_LHU ||
+                    ex_operator == `OPERATOR_LW  ||
+                    ex_operator == `OPERATOR_LWL ||
+                    ex_operator == `OPERATOR_LWR
+                ) &&
                 ex_register_write_address == register_read_address_a
             ) begin
                 stall_request <= `STALL_ENABLE;
             end
             else if (
                 register_read_enable_b == `READ_ENABLE &&
-                ex_category == `CATEGORY_MEMORY &&
+                (
+                    ex_operator == `OPERATOR_LB  ||
+                    ex_operator == `OPERATOR_LBU ||
+                    ex_operator == `OPERATOR_LH  ||
+                    ex_operator == `OPERATOR_LHU ||
+                    ex_operator == `OPERATOR_LW  ||
+                    ex_operator == `OPERATOR_LWL ||
+                    ex_operator == `OPERATOR_LWR
+                ) &&
                 ex_register_write_address == register_read_address_b
             ) begin
                 stall_request <= `STALL_ENABLE;

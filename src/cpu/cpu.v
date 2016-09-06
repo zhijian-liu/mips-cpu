@@ -142,41 +142,41 @@ module cpu(
     );
 
     stage_id stage_id(
-        .reset(reset),
-        .instruction_i(id_instruction_i),
-        .instruction_o(id_instruction_o),
-        .register_pc_write_enable(id_register_pc_write_enable),
-        .register_pc_write_data(id_register_pc_write_data),
-        .register_pc_read_data(id_register_pc_read_data),
-        .register_read_enable_a(id_register_read_enable_a),
-        .register_read_address_a(id_register_read_address_a),
-        .register_read_data_a(id_register_read_data_a),
-        .register_read_enable_b(id_register_read_enable_b),
-        .register_read_address_b(id_register_read_address_b),
-        .register_read_data_b(id_register_read_data_b),
-        .operator(id_operator),
-        .category(id_category),
-        .operand_a(id_operand_a),
-        .operand_b(id_operand_b),
-        .register_write_enable(id_register_write_enable),
-        .register_write_address(id_register_write_address),
-        .register_write_data(id_register_write_data),
-        .ex_category(ex_category),
-        .ex_register_write_enable(ex_register_write_enable_o),
-        .ex_register_write_address(ex_register_write_address_o),
-        .ex_register_write_data(ex_register_write_data_o),
-        .mem_register_write_enable(mem_register_write_enable_o),
+        .reset                     (reset                       ),
+        .instruction_i             (id_instruction_i            ),
+        .instruction_o             (id_instruction_o            ),
+        .register_pc_write_enable  (id_register_pc_write_enable ),
+        .register_pc_write_data    (id_register_pc_write_data   ),
+        .register_pc_read_data     (id_register_pc_read_data    ),
+        .register_read_enable_a    (id_register_read_enable_a   ),
+        .register_read_address_a   (id_register_read_address_a  ),
+        .register_read_data_a      (id_register_read_data_a     ),
+        .register_read_enable_b    (id_register_read_enable_b   ),
+        .register_read_address_b   (id_register_read_address_b  ),
+        .register_read_data_b      (id_register_read_data_b     ),
+        .operator                  (id_operator                 ),
+        .category                  (id_category                 ),
+        .operand_a                 (id_operand_a                ),
+        .operand_b                 (id_operand_b                ),
+        .register_write_enable     (id_register_write_enable    ),
+        .register_write_address    (id_register_write_address   ),
+        .register_write_data       (id_register_write_data      ),
+        .ex_operator               (ex_operator_o               ),
+        .ex_register_write_enable  (ex_register_write_enable_o  ),
+        .ex_register_write_address (ex_register_write_address_o ),
+        .ex_register_write_data    (ex_register_write_data_o    ),
+        .mem_register_write_enable (mem_register_write_enable_o ),
         .mem_register_write_address(mem_register_write_address_o),
-        .mem_register_write_data(mem_register_write_data_o),
-        .stall_request(id_stall_request)
+        .mem_register_write_data   (mem_register_write_data_o   ),
+        .stall_request             (id_stall_request            )
     );
 
-    assign register_read_enable_a   = id_register_read_enable_a;
-    assign register_read_address_a  = id_register_read_address_a;
-    assign id_register_read_data_a  = register_read_data_a;
-    assign register_read_enable_b   = id_register_read_enable_b;
-    assign register_read_address_b  = id_register_read_address_b;
-    assign id_register_read_data_b  = register_read_data_b;
+    assign register_read_enable_a  = id_register_read_enable_a ;
+    assign register_read_address_a = id_register_read_address_a;
+    assign id_register_read_data_a = register_read_data_a      ;
+    assign register_read_enable_b  = id_register_read_enable_b ;
+    assign register_read_address_b = id_register_read_address_b;
+    assign id_register_read_data_b = register_read_data_b      ;
 
     latch_id_ex latch_id_ex(
         .clock(clock),
