@@ -229,16 +229,16 @@ module stage_ex(
                                          operand_a_i[12] == 1'b1 ? 32'd19 :
                                          operand_a_i[11] == 1'b1 ? 32'd20 :
                                          operand_a_i[10] == 1'b1 ? 32'd21 :
-                                         operand_a_i[9] == 1'b1 ? 32'd22 :
-                                         operand_a_i[8] == 1'b1 ? 32'd23 :
-                                         operand_a_i[7] == 1'b1 ? 32'd24 :
-                                         operand_a_i[6] == 1'b1 ? 32'd25 :
-                                         operand_a_i[5] == 1'b1 ? 32'd26 :
-                                         operand_a_i[4] == 1'b1 ? 32'd27 :
-                                         operand_a_i[3] == 1'b1 ? 32'd28 :
-                                         operand_a_i[2] == 1'b1 ? 32'd29 :
-                                         operand_a_i[1] == 1'b1 ? 32'd30 :
-                                         operand_a_i[0] == 1'b1 ? 32'd31 : 32'd32;
+                                         operand_a_i[9]  == 1'b1 ? 32'd22 :
+                                         operand_a_i[8]  == 1'b1 ? 32'd23 :
+                                         operand_a_i[7]  == 1'b1 ? 32'd24 :
+                                         operand_a_i[6]  == 1'b1 ? 32'd25 :
+                                         operand_a_i[5]  == 1'b1 ? 32'd26 :
+                                         operand_a_i[4]  == 1'b1 ? 32'd27 :
+                                         operand_a_i[3]  == 1'b1 ? 32'd28 :
+                                         operand_a_i[2]  == 1'b1 ? 32'd29 :
+                                         operand_a_i[1]  == 1'b1 ? 32'd30 :
+                                         operand_a_i[0]  == 1'b1 ? 32'd31 : 32'd32;
                 end
                 `OPERATOR_CLO : begin
                     result_arithmetic <= operand_a_i[31] == 1'b0 ? 32'd0 :
@@ -263,16 +263,16 @@ module stage_ex(
                                          operand_a_i[12] == 1'b0 ? 32'd19 :
                                          operand_a_i[11] == 1'b0 ? 32'd20 :
                                          operand_a_i[10] == 1'b0 ? 32'd21 :
-                                         operand_a_i[9] == 1'b0 ? 32'd22 :
-                                         operand_a_i[8] == 1'b0 ? 32'd23 :
-                                         operand_a_i[7] == 1'b0 ? 32'd24 :
-                                         operand_a_i[6] == 1'b0 ? 32'd25 :
-                                         operand_a_i[5] == 1'b0 ? 32'd26 :
-                                         operand_a_i[4] == 1'b0 ? 32'd27 :
-                                         operand_a_i[3] == 1'b0 ? 32'd28 :
-                                         operand_a_i[2] == 1'b0 ? 32'd29 :
-                                         operand_a_i[1] == 1'b0 ? 32'd30 :
-                                         operand_a_i[0] == 1'b0 ? 32'd31 : 32'd32;
+                                         operand_a_i[9]  == 1'b0 ? 32'd22 :
+                                         operand_a_i[8]  == 1'b0 ? 32'd23 :
+                                         operand_a_i[7]  == 1'b0 ? 32'd24 :
+                                         operand_a_i[6]  == 1'b0 ? 32'd25 :
+                                         operand_a_i[5]  == 1'b0 ? 32'd26 :
+                                         operand_a_i[4]  == 1'b0 ? 32'd27 :
+                                         operand_a_i[3]  == 1'b0 ? 32'd28 :
+                                         operand_a_i[2]  == 1'b0 ? 32'd29 :
+                                         operand_a_i[1]  == 1'b0 ? 32'd30 :
+                                         operand_a_i[0]  == 1'b0 ? 32'd31 : 32'd32;
                 end
                 `OPERATOR_MULT, `OPERATOR_MUL : begin
                 	if (operand_a_i[31] == 1'b0 && operand_b_i[31] == 1'b0) begin

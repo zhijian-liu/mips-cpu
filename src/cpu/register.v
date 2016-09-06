@@ -47,10 +47,12 @@ module register(
     end
 
     always @ (negedge clock) begin
-        if (reset == `RESET_DISABLE) begin
-            if ((write_enable == `WRITE_ENABLE) && (write_address != 5'b0)) begin
-                storage[write_address] <= write_data;
-            end
+        if (
+            reset == `RESET_DISABLE && 
+            write_enable == `WRITE_ENABLE &&
+            write_address != 5'b0
+        ) begin
+            storage[write_address] <= write_data;
         end
     end
 endmodule

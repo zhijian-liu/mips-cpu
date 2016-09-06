@@ -668,19 +668,27 @@ module stage_id(
 
 // 
     always @ (*) begin
-        if (reset == `RESET_DISABLE && ex_category == `CATEGORY_MEMORY) begin
-            if (register_read_enable_a == `READ_ENABLE && ex_register_write_address == register_read_address_a) begin
+        if (reset == `RESET_ENABLE) begin
+            stall_request <= `STALL_DISABLE;
+        end
+        else begin
+            if (
+                register_read_enable_a == `READ_ENABLE &&
+                ex_category == `CATEGORY_MEMORY &&
+                ex_register_write_address == register_read_address_a
+            ) begin
                 stall_request <= `STALL_ENABLE;
             end
-            else if (register_read_enable_b == `READ_ENABLE && ex_register_write_address == register_read_address_b) begin
+            else if (
+                register_read_enable_b == `READ_ENABLE &&
+                ex_category == `CATEGORY_MEMORY &&
+                ex_register_write_address == register_read_address_b
+            ) begin
                 stall_request <= `STALL_ENABLE;
             end
             else begin
                 stall_request <= `STALL_DISABLE;
             end
-        end
-        else begin
-            stall_request <= `STALL_DISABLE;
         end
     end
 
