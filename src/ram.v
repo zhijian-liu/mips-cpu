@@ -36,10 +36,10 @@ module ram(
                 storage[write_address[18:2]][23:16] <= write_data[23:16];
             end
             if (write_select[1] == 1'b1) begin
-                storage[write_address[18:2]][15:8]  <= write_data[15:8];
+                storage[write_address[18:2]][15:8]  <= write_data[15:8] ;
             end
             if (write_select[0] == 1'b1) begin
-                storage[write_address[18:2]][7:0]   <= write_data[7:0];
+                storage[write_address[18:2]][7:0]   <= write_data[7:0]  ;
             end
         end
     end

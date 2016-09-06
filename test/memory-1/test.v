@@ -1,8 +1,7 @@
 `timescale 1ns/1ps
 
 module test();
-    reg     clock, reset;
-    integer i           ;
+    reg clock, reset;
 
     sopc sopc(
         .clock(clock),
