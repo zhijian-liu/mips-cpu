@@ -27,14 +27,20 @@ module stage_id(
     input      [31:0] mem_register_write_data   ,
     output reg        stall_request
 );
-    wire [31:0] register_pc_next      = register_pc_read_data + 32'd4                                            ;
-    wire [31:0] register_pc_next_next = register_pc_read_data + 32'd8                                            ;
-    wire [31:0] register_pc_branch    = register_pc_next + {{14 {instruction_i[15]}}, instruction_i[15:0], 2'b00};
+    wire [31:0] register_pc_next    = register_pc_read_data + 32'd4                                            ;
+    wire [31:0] register_pc_jump    = {register_pc_next[31:28], instruction_i[25:0], 2'b0}                     ;
+    wire [31:0] register_pc_branch  = register_pc_next + {{14 {instruction_i[15]}}, instruction_i[15:0], 2'b00};
+    wire [31:0] ex_operator_is_load = ex_operator == `OPERATOR_LB  ||
+                                      ex_operator == `OPERATOR_LBU ||
+                                      ex_operator == `OPERATOR_LH  ||
+                                      ex_operator == `OPERATOR_LHU ||
+                                      ex_operator == `OPERATOR_LW  ||
+                                      ex_operator == `OPERATOR_LWL ||
+                                      ex_operator == `OPERATOR_LWR;
 
     assign instruction_o = instruction_i;
 
     reg [31:0] immediate_value;
-
     always @ (*) begin
         if (reset == `RESET_ENABLE) begin
             operator                 <= `OPERATOR_NOP ;
@@ -233,15 +239,15 @@ module stage_id(
                                     register_pc_write_data      <= operand_a     ;
                                 end
                                 `OPCODE_JALR : begin
-                                    operator                    <= `OPERATOR_JALR       ;
-                                    category                    <= `CATEGORY_JUMP       ;
-                                    register_read_enable_a      <= `READ_ENABLE         ;
-                                    register_read_enable_b      <= `READ_DISABLE        ;
-                                    register_write_enable       <= `WRITE_ENABLE        ;
-                                    register_write_address      <= instruction_i[15:11] ;
-                                    register_write_data         <= register_pc_next_next;
-                                    register_pc_write_enable    <= `WRITE_ENABLE        ;
-                                    register_pc_write_data      <= operand_a            ;
+                                    operator                    <= `OPERATOR_JALR               ;
+                                    category                    <= `CATEGORY_JUMP               ;
+                                    register_read_enable_a      <= `READ_ENABLE                 ;
+                                    register_read_enable_b      <= `READ_DISABLE                ;
+                                    register_write_enable       <= `WRITE_ENABLE                ;
+                                    register_write_address      <= instruction_i[15:11]         ;
+                                    register_write_data         <= register_pc_read_data + 32'd8;
+                                    register_pc_write_enable    <= `WRITE_ENABLE                ;
+                                    register_pc_write_data      <= operand_a                    ;
                                 end
                             endcase
                         end
@@ -265,7 +271,7 @@ module stage_id(
                             register_read_enable_b   <= `READ_DISABLE                                           ;
                             register_write_enable    <= `WRITE_ENABLE                                           ;
                             register_write_address   <= 5'b11111                                                ;
-                            register_write_data      <= register_pc_next_next                                   ;
+                            register_write_data      <= register_pc_read_data + 32'd8                           ;
                             register_pc_write_enable <= (operand_a[31] == 1'b0) ? `WRITE_ENABLE : `WRITE_DISABLE;
                             register_pc_write_data   <= register_pc_branch                                      ;
                         end
@@ -294,25 +300,25 @@ module stage_id(
                 6'b011100 : begin
                     case (instruction_i[5:0])
                         `OPCODE_CLZ : begin
-                            register_read_enable_a  <= `READ_ENABLE;
-                            register_read_enable_b  <= `READ_DISABLE;
-                            operator                <= `OPERATOR_CLZ;
+                            register_read_enable_a  <= `READ_ENABLE        ;
+                            register_read_enable_b  <= `READ_DISABLE       ;
+                            operator                <= `OPERATOR_CLZ       ;
                             category                <= `CATEGORY_ARITHMETIC;
-                            register_write_enable   <= `WRITE_ENABLE;
+                            register_write_enable   <= `WRITE_ENABLE       ;
                         end
                         `OPCODE_CLO : begin
-                            register_read_enable_a  <= `READ_ENABLE;
-                            register_read_enable_b  <= `READ_DISABLE;
-                            operator                <= `OPERATOR_CLO;
+                            register_read_enable_a  <= `READ_ENABLE        ;
+                            register_read_enable_b  <= `READ_DISABLE       ;
+                            operator                <= `OPERATOR_CLO       ;
                             category                <= `CATEGORY_ARITHMETIC;
-                            register_write_enable   <= `WRITE_ENABLE;
+                            register_write_enable   <= `WRITE_ENABLE       ;
                         end
                         `OPCODE_MUL : begin
-                            register_read_enable_a  <= `READ_ENABLE;
-                            register_read_enable_b  <= `READ_ENABLE;
-                            operator                <= `OPERATOR_MUL;
+                            register_read_enable_a  <= `READ_ENABLE        ;
+                            register_read_enable_b  <= `READ_ENABLE        ;
+                            operator                <= `OPERATOR_MUL       ;
                             category                <= `CATEGORY_ARITHMETIC;
-                            register_write_enable   <= `WRITE_ENABLE;
+                            register_write_enable   <= `WRITE_ENABLE       ;
                         end
                     endcase
                 end
@@ -335,46 +341,46 @@ module stage_id(
                     immediate_value        <= {16'b0, instruction_i[15:0]};
                 end
                 `OPCODE_XORI : begin
-                    operator               <= `OPERATOR_XOR;
-                    category               <= `CATEGORY_LOGIC;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
-                    register_write_address <= instruction_i[20:16];
+                    operator               <= `OPERATOR_XOR               ;
+                    category               <= `CATEGORY_LOGIC             ;
+                    register_read_enable_a <= `READ_ENABLE                ;
+                    register_read_enable_b <= `READ_DISABLE               ;
+                    register_write_enable  <= `WRITE_ENABLE               ;
+                    register_write_address <= instruction_i[20:16]        ;
                     immediate_value        <= {16'b0, instruction_i[15:0]};
                 end
                 `OPCODE_LUI : begin
-                    operator               <= `OPERATOR_OR;
-                    category               <= `CATEGORY_LOGIC;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
-                    register_write_address <= instruction_i[20:16];
+                    operator               <= `OPERATOR_OR                ;
+                    category               <= `CATEGORY_LOGIC             ;
+                    register_read_enable_a <= `READ_ENABLE                ;
+                    register_read_enable_b <= `READ_DISABLE               ;
+                    register_write_enable  <= `WRITE_ENABLE               ;
+                    register_write_address <= instruction_i[20:16]        ;
                     immediate_value        <= {instruction_i[15:0], 16'b0};
                 end
                 `OPCODE_PREF : begin
-                    operator               <= `OPERATOR_NOP;
+                    operator               <= `OPERATOR_NOP ;
                     category               <= `CATEGORY_NONE;
-                    register_read_enable_a <= `READ_DISABLE;
-                    register_read_enable_b <= `READ_ENABLE;
+                    register_read_enable_a <= `READ_DISABLE ;
+                    register_read_enable_b <= `READ_ENABLE  ;
                     register_write_enable  <= `WRITE_DISABLE;
                 end
                 `OPCODE_SLTI : begin
-                    operator               <= `OPERATOR_SLT;
-                    category               <= `CATEGORY_ARITHMETIC;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
-                    register_write_address <= instruction_i[20:16];
+                    operator               <= `OPERATOR_SLT                                  ;
+                    category               <= `CATEGORY_ARITHMETIC                           ;
+                    register_read_enable_a <= `READ_ENABLE                                   ;
+                    register_read_enable_b <= `READ_DISABLE                                  ;
+                    register_write_enable  <= `WRITE_ENABLE                                  ;
+                    register_write_address <= instruction_i[20:16]                           ;
                     immediate_value        <= {{16 {instruction_i[15]}}, instruction_i[15:0]};
                 end
                 `OPCODE_SLTIU : begin
-                    operator               <= `OPERATOR_SLTU;
-                    category               <= `CATEGORY_ARITHMETIC;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
-                    register_write_address <= instruction_i[20:16];
+                    operator               <= `OPERATOR_SLTU                                 ;
+                    category               <= `CATEGORY_ARITHMETIC                           ;
+                    register_read_enable_a <= `READ_ENABLE                                   ;
+                    register_read_enable_b <= `READ_DISABLE                                  ;
+                    register_write_enable  <= `WRITE_ENABLE                                  ;
+                    register_write_address <= instruction_i[20:16]                           ;
                     immediate_value        <= {{16 {instruction_i[15]}}, instruction_i[15:0]};
                 end
                 `OPCODE_ADDI : begin
@@ -387,160 +393,160 @@ module stage_id(
                     immediate_value        <= {{16 {instruction_i[15]}}, instruction_i[15:0]};
                 end
                 `OPCODE_ADDIU : begin
-                    operator               <= `OPERATOR_ADDU;
-                    category               <= `CATEGORY_ARITHMETIC;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
-                    register_write_address <= instruction_i[20:16];
+                    operator               <= `OPERATOR_ADDU                                 ;
+                    category               <= `CATEGORY_ARITHMETIC                           ;
+                    register_read_enable_a <= `READ_ENABLE                                   ;
+                    register_read_enable_b <= `READ_DISABLE                                  ;
+                    register_write_enable  <= `WRITE_ENABLE                                  ;
+                    register_write_address <= instruction_i[20:16]                           ;
                     immediate_value        <= {{16 {instruction_i[15]}}, instruction_i[15:0]};
                 end
                 `OPCODE_LB : begin
-                    operator               <= `OPERATOR_LB;
-                    category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
+                    operator               <= `OPERATOR_LB        ;
+                    category               <= `CATEGORY_MEMORY    ;
+                    register_read_enable_a <= `READ_ENABLE        ;
+                    register_read_enable_b <= `READ_DISABLE       ;
+                    register_write_enable  <= `WRITE_ENABLE       ;
                     register_write_address <= instruction_i[20:16];
                 end
                 `OPCODE_LBU : begin
-                    operator               <= `OPERATOR_LBU;
-                    category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
+                    operator               <= `OPERATOR_LBU       ;
+                    category               <= `CATEGORY_MEMORY    ;
+                    register_read_enable_a <= `READ_ENABLE        ;
+                    register_read_enable_b <= `READ_DISABLE       ;
+                    register_write_enable  <= `WRITE_ENABLE       ;
                     register_write_address <= instruction_i[20:16];
                 end
                 `OPCODE_LH : begin
-                    operator               <= `OPERATOR_LH;
-                    category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
+                    operator               <= `OPERATOR_LH        ;
+                    category               <= `CATEGORY_MEMORY    ;
+                    register_read_enable_a <= `READ_ENABLE        ;
+                    register_read_enable_b <= `READ_DISABLE       ;
+                    register_write_enable  <= `WRITE_ENABLE       ;
                     register_write_address <= instruction_i[20:16];
                 end
                 `OPCODE_LHU : begin
-                    operator               <= `OPERATOR_LHU;
-                    category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
+                    operator               <= `OPERATOR_LHU       ;
+                    category               <= `CATEGORY_MEMORY    ;
+                    register_read_enable_a <= `READ_ENABLE        ;
+                    register_read_enable_b <= `READ_DISABLE       ;
+                    register_write_enable  <= `WRITE_ENABLE       ;
                     register_write_address <= instruction_i[20:16];
                 end
                 `OPCODE_LW : begin
-                    operator               <= `OPERATOR_LW;
-                    category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_DISABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
+                    operator               <= `OPERATOR_LW        ;
+                    category               <= `CATEGORY_MEMORY    ;
+                    register_read_enable_a <= `READ_ENABLE        ;
+                    register_read_enable_b <= `READ_DISABLE       ;
+                    register_write_enable  <= `WRITE_ENABLE       ;
                     register_write_address <= instruction_i[20:16];
                 end
                 `OPCODE_LWL : begin
-                    operator               <= `OPERATOR_LWL;
-                    category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_ENABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
+                    operator               <= `OPERATOR_LWL       ;
+                    category               <= `CATEGORY_MEMORY    ;
+                    register_read_enable_a <= `READ_ENABLE        ;
+                    register_read_enable_b <= `READ_ENABLE        ;
+                    register_write_enable  <= `WRITE_ENABLE       ;
                     register_write_address <= instruction_i[20:16];
                 end
                 `OPCODE_LWR : begin
-                    operator               <= `OPERATOR_LWR;
-                    category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_ENABLE;
-                    register_write_enable  <= `WRITE_ENABLE;
+                    operator               <= `OPERATOR_LWR       ;
+                    category               <= `CATEGORY_MEMORY    ;
+                    register_read_enable_a <= `READ_ENABLE        ;
+                    register_read_enable_b <= `READ_ENABLE        ;
+                    register_write_enable  <= `WRITE_ENABLE       ;
                     register_write_address <= instruction_i[20:16];
                 end
                 `OPCODE_SB : begin
-                    operator               <= `OPERATOR_SB;
+                    operator               <= `OPERATOR_SB    ;
                     category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_ENABLE;
-                    register_write_enable  <= `WRITE_DISABLE;
+                    register_read_enable_a <= `READ_ENABLE    ;
+                    register_read_enable_b <= `READ_ENABLE    ;
+                    register_write_enable  <= `WRITE_DISABLE  ;
                 end
                 `OPCODE_SH : begin
-                    operator               <= `OPERATOR_SH;
+                    operator               <= `OPERATOR_SH    ;
                     category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_ENABLE;
-                    register_write_enable  <= `WRITE_DISABLE;
+                    register_read_enable_a <= `READ_ENABLE    ;
+                    register_read_enable_b <= `READ_ENABLE    ;
+                    register_write_enable  <= `WRITE_DISABLE  ;
                 end
                 `OPCODE_SW : begin
-                    operator               <= `OPERATOR_SW;
+                    operator               <= `OPERATOR_SW    ;
                     category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_ENABLE;
-                    register_write_enable  <= `WRITE_DISABLE;
+                    register_read_enable_a <= `READ_ENABLE    ;
+                    register_read_enable_b <= `READ_ENABLE    ;
+                    register_write_enable  <= `WRITE_DISABLE  ;
                 end
                 `OPCODE_SWL : begin
-                    operator               <= `OPERATOR_SWL;
+                    operator               <= `OPERATOR_SWL   ;
                     category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_ENABLE;
-                    register_write_enable  <= `WRITE_DISABLE;
+                    register_read_enable_a <= `READ_ENABLE    ;
+                    register_read_enable_b <= `READ_ENABLE    ;
+                    register_write_enable  <= `WRITE_DISABLE  ;
                 end
                 `OPCODE_SWR : begin
-                    operator               <= `OPERATOR_SWR;
+                    operator               <= `OPERATOR_SWR   ;
                     category               <= `CATEGORY_MEMORY;
-                    register_read_enable_a <= `READ_ENABLE;
-                    register_read_enable_b <= `READ_ENABLE;
-                    register_write_enable  <= `WRITE_DISABLE;
+                    register_read_enable_a <= `READ_ENABLE    ;
+                    register_read_enable_b <= `READ_ENABLE    ;
+                    register_write_enable  <= `WRITE_DISABLE  ;
                 end
                 `OPCODE_J : begin
-                    operator                 <= `OPERATOR_J;
-                    category                 <= `CATEGORY_JUMP;
-                    register_read_enable_a   <= `READ_DISABLE;
-                    register_read_enable_b   <= `READ_DISABLE;
-                    register_write_enable    <= `WRITE_DISABLE;
-                    register_pc_write_enable <= `WRITE_ENABLE;
-                    register_pc_write_data   <= {register_pc_next[31:28], instruction_i[25:0], 2'b0};
+                    operator                 <= `OPERATOR_J     ;
+                    category                 <= `CATEGORY_JUMP  ;
+                    register_read_enable_a   <= `READ_DISABLE   ;
+                    register_read_enable_b   <= `READ_DISABLE   ;
+                    register_write_enable    <= `WRITE_DISABLE  ;
+                    register_pc_write_enable <= `WRITE_ENABLE   ;
+                    register_pc_write_data   <= register_pc_jump;
                 end
                 `OPCODE_JAL : begin
-                    operator                 <= `OPERATOR_JAL                                       ;
-                    category                 <= `CATEGORY_JUMP                                      ;
-                    register_read_enable_a   <= `READ_DISABLE                                       ;
-                    register_read_enable_b   <= `READ_DISABLE                                       ;
-                    register_write_enable    <= `WRITE_ENABLE                                       ;
-                    register_write_address   <= 5'b11111                                            ;
-                    register_write_data      <= register_pc_read_data + 32'd8                       ;
-                    register_pc_write_enable <= `WRITE_ENABLE                                       ;
-                    register_pc_write_data   <= {register_pc_next[31:28], instruction_i[25:0], 2'b0};
+                    operator                 <= `OPERATOR_JAL                ;
+                    category                 <= `CATEGORY_JUMP               ;
+                    register_read_enable_a   <= `READ_DISABLE                ;
+                    register_read_enable_b   <= `READ_DISABLE                ;
+                    register_write_enable    <= `WRITE_ENABLE                ;
+                    register_write_address   <= 5'b11111                     ;
+                    register_write_data      <= register_pc_read_data + 32'd8;
+                    register_pc_write_enable <= `WRITE_ENABLE                ;
+                    register_pc_write_data   <= register_pc_jump             ;
                 end
                 `OPCODE_BEQ : begin
-                    operator                 <= `OPERATOR_BEQ                                                                         ;
-                    category                 <= `CATEGORY_JUMP                                                                        ;
-                    register_read_enable_a   <= `READ_ENABLE                                                                          ;
-                    register_read_enable_b   <= `READ_ENABLE                                                                          ;
-                    register_write_enable    <= `WRITE_DISABLE                                                                        ;
-                    register_pc_write_enable <= (operand_a == operand_b) ? `WRITE_ENABLE : `WRITE_DISABLE                             ;
-                    register_pc_write_data   <= register_pc_read_data + 32'd4 + {{14 {instruction_i[15]}}, instruction_i[15:0], 2'b00};
-                end
-                `OPCODE_BGTZ : begin
-                    operator                 <= `OPERATOR_BGTZ                                                                        ;
-                    category                 <= `CATEGORY_JUMP                                                                        ;
-                    register_read_enable_a   <= `READ_ENABLE                                                                          ;
-                    register_read_enable_b   <= `READ_DISABLE                                                                         ;
-                    register_write_enable    <= `WRITE_DISABLE                                                                        ;
-                    register_pc_write_enable <= (operand_a[31] == 1'b0 && operand_a != 32'b0) ? `WRITE_ENABLE : `WRITE_DISABLE        ;
-                    register_pc_write_data   <= register_pc_read_data + 32'd4 + {{14 {instruction_i[15]}}, instruction_i[15:0], 2'b00};
-                end
-                `OPCODE_BLEZ : begin
-                    operator                 <= `OPERATOR_BLEZ                                                                        ;
-                    category                 <= `CATEGORY_JUMP                                                                        ;
-                    register_read_enable_a   <= `READ_ENABLE                                                                          ;
-                    register_read_enable_b   <= `READ_DISABLE                                                                         ;
-                    register_write_enable    <= `WRITE_DISABLE                                                                        ;
-                    register_pc_write_enable <= (operand_a[31] == 1'b1 || operand_a == 32'b0) ? `WRITE_ENABLE : `WRITE_DISABLE        ;
-                    register_pc_write_data   <= register_pc_read_data + 32'd4 + {{14 {instruction_i[15]}}, instruction_i[15:0], 2'b00};
+                    operator                 <= `OPERATOR_BEQ                                            ;
+                    category                 <= `CATEGORY_JUMP                                           ;
+                    register_read_enable_a   <= `READ_ENABLE                                             ;
+                    register_read_enable_b   <= `READ_ENABLE                                             ;
+                    register_write_enable    <= `WRITE_DISABLE                                           ;
+                    register_pc_write_enable <= (operand_a == operand_b) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                    register_pc_write_data   <= register_pc_branch                                       ;
                 end
                 `OPCODE_BNE : begin
-                    operator                 <= `OPERATOR_BNE                                                                         ;
-                    category                 <= `CATEGORY_JUMP                                                                        ;
-                    register_read_enable_a   <= `READ_ENABLE                                                                          ;
-                    register_read_enable_b   <= `READ_ENABLE                                                                          ;
-                    register_write_enable    <= `WRITE_DISABLE                                                                        ;
-                    register_pc_write_enable <= (operand_a != operand_b ? `WRITE_ENABLE : `WRITE_DISABLE)                             ;
-                    register_pc_write_data   <= register_pc_read_data + 32'd4 + {{14 {instruction_i[15]}}, instruction_i[15:0], 2'b00};
+                    operator                 <= `OPERATOR_BNE                                            ;
+                    category                 <= `CATEGORY_JUMP                                           ;
+                    register_read_enable_a   <= `READ_ENABLE                                             ;
+                    register_read_enable_b   <= `READ_ENABLE                                             ;
+                    register_write_enable    <= `WRITE_DISABLE                                           ;
+                    register_pc_write_enable <= (operand_a != operand_b ? `WRITE_ENABLE : `WRITE_DISABLE);
+                    register_pc_write_data   <= register_pc_branch                                       ;
+                end
+                `OPCODE_BGTZ : begin
+                    operator                 <= `OPERATOR_BGTZ                                                                ;
+                    category                 <= `CATEGORY_JUMP                                                                ;
+                    register_read_enable_a   <= `READ_ENABLE                                                                  ;
+                    register_read_enable_b   <= `READ_DISABLE                                                                 ;
+                    register_write_enable    <= `WRITE_DISABLE                                                                ;
+                    register_pc_write_enable <= (operand_a[31] == 1'b0 && operand_a != 32'b0) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                    register_pc_write_data   <= register_pc_branch                                                            ;
+                end
+                `OPCODE_BLEZ : begin
+                    operator                 <= `OPERATOR_BLEZ                                                                ;
+                    category                 <= `CATEGORY_JUMP                                                                ;
+                    register_read_enable_a   <= `READ_ENABLE                                                                  ;
+                    register_read_enable_b   <= `READ_DISABLE                                                                 ;
+                    register_write_enable    <= `WRITE_DISABLE                                                                ;
+                    register_pc_write_enable <= (operand_a[31] == 1'b1 || operand_a == 32'b0) ? `WRITE_ENABLE : `WRITE_DISABLE;
+                    register_pc_write_data   <= register_pc_branch                                                            ;
                 end
             endcase
 
@@ -583,34 +589,10 @@ module stage_id(
             stall_request <= `STALL_DISABLE;
         end
         else begin
-            if (
-                register_read_enable_a == `READ_ENABLE &&
-                (
-                    ex_operator == `OPERATOR_LB  ||
-                    ex_operator == `OPERATOR_LBU ||
-                    ex_operator == `OPERATOR_LH  ||
-                    ex_operator == `OPERATOR_LHU ||
-                    ex_operator == `OPERATOR_LW  ||
-                    ex_operator == `OPERATOR_LWL ||
-                    ex_operator == `OPERATOR_LWR
-                ) &&
-                ex_register_write_address == register_read_address_a
-            ) begin
+            if (register_read_enable_a == `READ_ENABLE && ex_operator_is_load == 1'b1 && ex_register_write_address == register_read_address_a) begin
                 stall_request <= `STALL_ENABLE;
             end
-            else if (
-                register_read_enable_b == `READ_ENABLE &&
-                (
-                    ex_operator == `OPERATOR_LB  ||
-                    ex_operator == `OPERATOR_LBU ||
-                    ex_operator == `OPERATOR_LH  ||
-                    ex_operator == `OPERATOR_LHU ||
-                    ex_operator == `OPERATOR_LW  ||
-                    ex_operator == `OPERATOR_LWL ||
-                    ex_operator == `OPERATOR_LWR
-                ) &&
-                ex_register_write_address == register_read_address_b
-            ) begin
+            else if (register_read_enable_b == `READ_ENABLE && ex_operator_is_load == 1'b1 && ex_register_write_address == register_read_address_b) begin
                 stall_request <= `STALL_ENABLE;
             end
             else begin
@@ -623,18 +605,10 @@ module stage_id(
         if (reset == `RESET_ENABLE) begin
             operand_a <= 32'b0;
         end
-        else if (
-            register_read_enable_a   == `READ_ENABLE  &&
-            ex_register_write_enable == `WRITE_ENABLE &&
-            register_read_address_a  == ex_register_write_address
-        ) begin
+        else if (register_read_enable_a == `READ_ENABLE && ex_register_write_enable == `WRITE_ENABLE && register_read_address_a == ex_register_write_address) begin
             operand_a <= ex_register_write_data;
         end
-        else if (
-            register_read_enable_a    == `READ_ENABLE  &&
-            mem_register_write_enable == `WRITE_ENABLE &&
-            register_read_address_a   == mem_register_write_address
-        ) begin
+        else if (register_read_enable_a == `READ_ENABLE && mem_register_write_enable == `WRITE_ENABLE && register_read_address_a == mem_register_write_address) begin
             operand_a <= mem_register_write_data;
         end
         else if (register_read_enable_a == `READ_ENABLE) begin
@@ -652,18 +626,10 @@ module stage_id(
         if (reset == `RESET_ENABLE) begin
             operand_b <= 32'b0;
         end
-        else if (
-            register_read_enable_b   == `READ_ENABLE  &&
-            ex_register_write_enable == `WRITE_ENABLE &&
-            register_read_address_b  == ex_register_write_address
-        ) begin
+        else if (register_read_enable_b == `READ_ENABLE && ex_register_write_enable == `WRITE_ENABLE && register_read_address_b == ex_register_write_address) begin
             operand_b <= ex_register_write_data;
         end
-        else if (
-            register_read_enable_b    == `READ_ENABLE  &&
-            mem_register_write_enable == `WRITE_ENABLE &&
-            register_read_address_b   == mem_register_write_address
-        ) begin
+        else if (register_read_enable_b == `READ_ENABLE && mem_register_write_enable == `WRITE_ENABLE && register_read_address_b == mem_register_write_address) begin
             operand_b <= mem_register_write_data;
         end
         else if (register_read_enable_b == `READ_ENABLE) begin

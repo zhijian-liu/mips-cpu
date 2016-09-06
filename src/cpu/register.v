@@ -14,10 +14,7 @@ module register(
     reg [31:0] storage[31:0];
 
     always @ (*) begin
-        if (reset == `RESET_ENABLE) begin
-            read_data_a <= 32'b0;
-        end
-        else if (read_enable_a == `READ_ENABLE && read_address_a != 5'b0) begin
+        if (reset == `RESET_DISABLE && read_enable_a == `READ_ENABLE && read_address_a != 5'b0) begin
             read_data_a <= storage[read_address_a];
         end
         else begin
@@ -26,10 +23,7 @@ module register(
     end
 
     always @ (*) begin
-        if (reset == `RESET_ENABLE) begin
-            read_data_b <= 32'b0;
-        end
-        else if (read_enable_b == `READ_ENABLE && read_address_b != 5'b0) begin
+        if (reset == `RESET_DISABLE && read_enable_b == `READ_ENABLE && read_address_b != 5'b0) begin
             read_data_b <= storage[read_address_b];
         end
         else begin
@@ -38,11 +32,7 @@ module register(
     end
 
     always @ (negedge clock) begin
-        if (
-            reset         == `RESET_DISABLE && 
-            write_enable  == `WRITE_ENABLE  &&
-            write_address != 5'b0
-        ) begin
+        if (reset == `RESET_DISABLE && write_enable == `WRITE_ENABLE && write_address != 5'b0) begin
             storage[write_address] <= write_data;
         end
     end

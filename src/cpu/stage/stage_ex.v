@@ -171,16 +171,16 @@ module stage_ex(
                     result_arithmetic <= operand_sum;
                 end
                 `OPERATOR_CLZ : begin
-                    result_arithmetic <= operand_a_i[31] == 1'b1 ? 32'd0 :
-                                         operand_a_i[30] == 1'b1 ? 32'd1 :
-                                         operand_a_i[29] == 1'b1 ? 32'd2 :
-                                         operand_a_i[28] == 1'b1 ? 32'd3 :
-                                         operand_a_i[27] == 1'b1 ? 32'd4 :
-                                         operand_a_i[26] == 1'b1 ? 32'd5 :
-                                         operand_a_i[25] == 1'b1 ? 32'd6 :
-                                         operand_a_i[24] == 1'b1 ? 32'd7 :
-                                         operand_a_i[23] == 1'b1 ? 32'd8 :
-                                         operand_a_i[22] == 1'b1 ? 32'd9 :
+                    result_arithmetic <= operand_a_i[31] == 1'b1 ? 32'd0  :
+                                         operand_a_i[30] == 1'b1 ? 32'd1  :
+                                         operand_a_i[29] == 1'b1 ? 32'd2  :
+                                         operand_a_i[28] == 1'b1 ? 32'd3  :
+                                         operand_a_i[27] == 1'b1 ? 32'd4  :
+                                         operand_a_i[26] == 1'b1 ? 32'd5  :
+                                         operand_a_i[25] == 1'b1 ? 32'd6  :
+                                         operand_a_i[24] == 1'b1 ? 32'd7  :
+                                         operand_a_i[23] == 1'b1 ? 32'd8  :
+                                         operand_a_i[22] == 1'b1 ? 32'd9  :
                                          operand_a_i[21] == 1'b1 ? 32'd10 :
                                          operand_a_i[20] == 1'b1 ? 32'd11 :
                                          operand_a_i[19] == 1'b1 ? 32'd12 :
@@ -206,16 +206,16 @@ module stage_ex(
                                                                    32'd32 ;
                 end
                 `OPERATOR_CLO : begin
-                    result_arithmetic <= operand_a_i[31] == 1'b0 ? 32'd0 :
-                                         operand_a_i[30] == 1'b0 ? 32'd1 :
-                                         operand_a_i[29] == 1'b0 ? 32'd2 :
-                                         operand_a_i[28] == 1'b0 ? 32'd3 :
-                                         operand_a_i[27] == 1'b0 ? 32'd4 :
-                                         operand_a_i[26] == 1'b0 ? 32'd5 :
-                                         operand_a_i[25] == 1'b0 ? 32'd6 :
-                                         operand_a_i[24] == 1'b0 ? 32'd7 :
-                                         operand_a_i[23] == 1'b0 ? 32'd8 :
-                                         operand_a_i[22] == 1'b0 ? 32'd9 :
+                    result_arithmetic <= operand_a_i[31] == 1'b0 ? 32'd0  :
+                                         operand_a_i[30] == 1'b0 ? 32'd1  :
+                                         operand_a_i[29] == 1'b0 ? 32'd2  :
+                                         operand_a_i[28] == 1'b0 ? 32'd3  :
+                                         operand_a_i[27] == 1'b0 ? 32'd4  :
+                                         operand_a_i[26] == 1'b0 ? 32'd5  :
+                                         operand_a_i[25] == 1'b0 ? 32'd6  :
+                                         operand_a_i[24] == 1'b0 ? 32'd7  :
+                                         operand_a_i[23] == 1'b0 ? 32'd8  :
+                                         operand_a_i[22] == 1'b0 ? 32'd9  :
                                          operand_a_i[21] == 1'b0 ? 32'd10 :
                                          operand_a_i[20] == 1'b0 ? 32'd11 :
                                          operand_a_i[19] == 1'b0 ? 32'd12 :

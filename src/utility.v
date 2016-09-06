@@ -1,4 +1,3 @@
-// 
 `define CHIP_ENABLE   1'b1
 `define CHIP_DISABLE  1'b0
 `define RESET_ENABLE  1'b1
@@ -10,7 +9,6 @@
 `define STALL_ENABLE  1'b1
 `define STALL_DISABLE 1'b0
 
-// 
 `define OPCODE_AND    6'b100100
 `define OPCODE_OR     6'b100101
 `define OPCODE_XOR    6'b100110
@@ -85,7 +83,6 @@
 `define OPCODE_SWL    6'b101010
 `define OPCODE_SWR    6'b101110
 
-// 
 `define OPERATOR_NOP    8'b00000000
 `define OPERATOR_AND    8'b00000001
 `define OPERATOR_OR     8'b00000010
@@ -136,7 +133,6 @@
 `define OPERATOR_SWL    8'b00101111
 `define OPERATOR_SWR    8'b00110000
 
-// 
 `define CATEGORY_NONE       3'b000
 `define CATEGORY_LOGIC      3'b001
 `define CATEGORY_SHIFT      3'b010

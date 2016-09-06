@@ -28,14 +28,15 @@ module sopc(
         .ram_write_select  (ram_write_select ),
         .ram_write_data    (ram_write_data   )
     );
+    
+    assign rom_chip_enable = (reset == `RESET_ENABLE) ? `CHIP_DISABLE : `CHIP_ENABLE;
+    assign ram_chip_enable = (reset == `RESET_ENABLE) ? `CHIP_DISABLE : `CHIP_ENABLE;
 
     rom rom(
         .chip_enable  (rom_chip_enable ),
         .read_address (rom_read_address),
         .read_data    (rom_read_data   )
     );
-
-    assign rom_chip_enable = (reset == `RESET_ENABLE) ? `CHIP_DISABLE : `CHIP_ENABLE;
 
     ram ram(
         .clock         (clock            ),
@@ -48,6 +49,4 @@ module sopc(
         .write_select  (ram_write_select ),
         .write_data    (ram_write_data   )
     );
-
-    assign ram_chip_enable = (reset == `RESET_ENABLE) ? `CHIP_DISABLE : `CHIP_ENABLE;
 endmodule
