@@ -19,7 +19,7 @@ module test();
         $dumpvars(0, sopc.cpu.register.storage[7]);
         $dumpvars(0, sopc.cpu.register.storage[8]);
 
-        $readmemh("rom.txt", sopc.rom.storage, 0, 15);
+        $readmemh("rom.txt", sopc.rom.storage);
 
         clock = 1'b0;
         reset = 1'b1;

@@ -14,7 +14,7 @@ module test();
         $dumpfile("test.vcd");
 
         $dumpvars;
-        $dumpvars(0, sopc.cpu.register.storage[1]);
+        $dumpvars(0, sopc.cpu.register.storage[5]);
 
         $readmemh("rom.txt", sopc.rom.storage);
 
@@ -22,15 +22,10 @@ module test();
         reset = 1'b1;
 
         #20 reset = 1'b0;
-        #10 `AR(1, 32'h00001234);
-        #2  `AR(1, 32'h00001234);
-        #2  `AR(1, 32'h00001234);
-        #2  `AR(1, 32'h00000000);
-        #2  `AR(1, 32'h00001234);
-        #2  `AR(1, 32'h00001234);
-        #2  `AR(1, 32'h00001234);
-        #2  `AR(1, 32'h00001234);
-        #2  `AR(1, 32'h000089AB);
+        #10 `AR(5, 32'h00001100);
+        #2  `AR(5, 32'h00001120);
+        #2  `AR(5, 32'h00005520);
+        #2  `AR(5, 32'h00005564);
         `PASS;
     end
 endmodule

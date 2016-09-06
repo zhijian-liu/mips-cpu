@@ -1,12 +1,13 @@
 `define ASSERT(x) do begin \
         if (!(x)) begin \
-            $display("\033[91;1m[%s:%0d]assertion failure: %s\033[0m", `__FILE__, `__LINE__, `"x`"); \
+            $display("\033[91;1m==>\033[0m test failed."); \
+            $display("\033[91;1massertion failure [%s:%0d]: %s\033[0m", `__FILE__, `__LINE__, `"x`"); \
             $finish_and_return(1); \
         end \
     end while (0)
 
 `define PASS #2 do begin \
-		$display("\033[92;1mtest passed.\033[0m"); \
+		$display("\033[92;1m==>\033[0m test passed."); \
 		$finish; \
 	end while (0)
 
