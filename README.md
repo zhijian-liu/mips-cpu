@@ -1,4 +1,4 @@
-# mips-cpu
+# `mips-cpu`
 
 ## Introduction
 
