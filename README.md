@@ -18,7 +18,10 @@ After installation, you can try the following command to see the version informa
 ### Install the `GCC toolchain`
 From a terminal:
 	
-	T.B.D
+	wget https://github.com/sergev/LiteBSD/releases/download/tools/gcc-4.8.1-mips-macosx.tgz
+	tar zxvf gcc-4.8.1-mips-macosx.tgz
+	rm gcc-4.8.1-mips-macosx.tgz
+	mv mips-gcc-4.8.1 ~
 
 ## Installation
 From a terminal:
