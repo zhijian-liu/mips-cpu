@@ -122,11 +122,30 @@ These modules are implemented in:
 \item
 \texttt{src/cpu/latch/latch\_mem\_wb.v}
 \end{itemize}
-In my implementation, all of the pipeline latches update the data on the rising edge of the clock signal.
+Note that all of the pipeline latches propagate the data on the rising edge of the clock signal.
 
-%\subsection{Storage Modules}
-%
-%\subsection{Control Module}
+\subsection{Storage Modules}
+In my implementation, all of the storage modules write the data on the falling edge of the clock signal. Otherwise, some additional codes will be needed to support the bypassing inside the storage modules.
+
+\subsubsection{Instruction ROM}
+Because the instructions cannot be modified at runtime, the instruction ROM has only one major function: memory read. It uses a set of input wires to read the program counter and outputs the corresponding instruction.
+
+This module is implemented in \texttt{src/rom.v}.
+
+\subsubsection{Data RAM}
+Unlike the instruction ROM, the data RAM has two major functions: memory read and memory write. It uses a set of input wires to read the address and outputs the corresponding data. At the meantime, it also provides a set of wires for writing.
+
+This module is implemented in \texttt{src/ram.v}.
+
+\subsubsection{Register File}
+The register file provides two sets of input wires for querying the value of a given register, and a set of wires for writing a register.
+
+This module is implemented in \texttt{src/cpu/register.v}.
+
+\subsection{Control Module}
+The main function of the control module is to receive the stall request from the pipeline stages and send the stall signal to the pipeline latches.
+
+This module is implemented in \texttt{src/cpu/control.v}.
 
 %\section{Technical Detail}
 %
@@ -137,16 +156,6 @@ In my implementation, all of the pipeline latches update the data on the rising 
 %\section{Test Summary}
 
 %\section{Discussion}
-%
-%\begin{itemize}
-%\item
-%Branch prediction:
-%\item
-%\item
-%Out of order execution
-%\end{itemize}
-%
-%I plan to blablabla
 
 \section{Acknowledgements}
 I would like to thank Professor Alei Liang for bringing me such a wonderful course, Shusheng He for his hard work and warm devotion, and Yurong You, Zihao Ye and Lequn Chen for valuable discussions.
