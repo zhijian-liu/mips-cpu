@@ -155,6 +155,39 @@ This module is implemented in \texttt{src/cpu/control.v}.
 
 \section{Test Summary}
 
+\subsection{Test Case}
+There are nine test cases in total:
+\begin{itemize}
+\item
+\texttt{test/test-logic}: check the logical instructions.
+\item
+\texttt{test/test-shift}: check the shift instructions.
+\item
+\texttt{test/test-move}: check the move instructions.
+\item
+\texttt{test/test-arithmetic}: check the arithmetic instructions.
+\item
+\texttt{test/test-jump}: check the jump instructions.
+\item
+\texttt{test/test-branch}: check the branch instructions.
+\item
+\texttt{test/test-memory}: check the memory instructions.
+\item
+\texttt{test/test-stall}: check the stall detection.
+\item
+\texttt{test/test-forwarding}: check the data forwarding.
+\end{itemize}
+In each test folder, there are totally three files:
+\begin{itemize}
+\item
+\texttt{asm.s}: the testing MIPS assembly code.
+\item
+\texttt{test.v}: the automatic testing code written in Verilog HDL.
+\item
+\texttt{Makefile}: the testing script.
+\end{itemize}
+A detailed guide to running the automatic test is written in \texttt{README.md}.
+
 %\section{Discussion}
 
 \section{Acknowledgements}

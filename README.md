@@ -41,8 +41,8 @@ The `test` is composed of the following test cases:
 	test-arithmetic
 	test-jump
 	test-branch
-	test-load-store
-	test-load-stall
+	test-memory
+	test-stall
 	test-forwarding
 	
 If you want to run a single test case, you can use the following command:

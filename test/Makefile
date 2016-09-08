@@ -5,8 +5,8 @@ all:
 	cd test-arithmetic && make
 	cd test-jump       && make
 	cd test-branch     && make
-	cd test-load-store && make
-	cd test-load-stall && make
+	cd test-memory     && make
+	cd test-stall      && make
 	cd test-forwarding && make
 
 clean:
