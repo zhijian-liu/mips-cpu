@@ -7,7 +7,7 @@
 \usepackage{amsmath} % Required for some math elements 
 \usepackage{multirow}
 \usepackage{fourier}
-\usepackage{enumerate}
+\usepackage{booktabs}
 \usepackage[colorlinks,linkcolor=red]{hyperref}
 
 \setlength\parindent{0pt} % Removes all indentation from paragraphs
@@ -90,7 +90,7 @@ The main function of this module is to calculate the operation result according 
 
 In order to mitigate the data hazards, some interfaces are designed to fetch the latest data forwarding from the stage MEM and the stage WB.
 
-Note that the "stall\_request" signal is actually redundant because in the functional simulation\footnote{\url{https://en.wikipedia.org/wiki/Logic\_simulation}}, all kinds of calculation can be finished in a single cycle.
+Note that the "stall\_request" signal is actually redundant because in the functional simulation, all kinds of calculation can be finished in a single cycle.
 
 This module is implemented in \texttt{src/cpu/stage/stage\_ex.v}.
 

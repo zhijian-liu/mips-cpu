@@ -1,8 +1,8 @@
 \begin{table}[!h]
 \centering
-\begin{tabular}{|c|c|c|}
-\hline
-Interface & Type & Usage \\ \hline
+\begin{tabular}{ccc}
+\toprule
+Interface & Type & Usage \\ \midrule
 reset & in & reset signal \\ \hline
 instruction & in & instruction \\ \hline
 operator & in & operator \\ \hline
@@ -28,7 +28,7 @@ register\_hi\_write\_data\_o & out &  \\ \hline
 register\_lo\_write\_enable\_i & in & \multirow{4}{*}{register LO} \\ \cline{1-2}
 register\_lo\_write\_enable\_o & out &  \\ \cline{1-2}
 register\_lo\_write\_data\_i & in &  \\ \cline{1-2}
-register\_lo\_write\_data\_o & out &  \\ \hline
+register\_lo\_write\_data\_o & out &  \\ \bottomrule
 \end{tabular}
 \caption{the interfaces of the stage MEM}
 \end{table}

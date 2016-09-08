@@ -1,8 +1,8 @@
 \begin{table}[!h]
 \centering
-\begin{tabular}{|c|c|c|}
-\hline
-Interface & Type & Usage \\ \hline
+\begin{tabular}{ccc}
+\toprule
+Interface & Type & Usage \\ \midrule
 reset & in & reset signal \\ \hline
 instruction\_i & in & \multirow{2}{*}{instruction} \\ \cline{1-2}
 instruction\_o & out &  \\ \hline
@@ -29,7 +29,7 @@ ex\_register\_write\_data & in &  \\ \hline
 mem\_register\_write\_enable & in & \multirow{3}{*}{data forwarding from the stage MEM} \\ \cline{1-2}
 mem\_register\_write\_address & in &  \\ \cline{1-2}
 mem\_register\_write\_data & in &  \\ \hline
-stall\_request & out & whether or not is to request stall \\ \hline
+stall\_request & out & whether or not is to request stall \\ \bottomrule
 \end{tabular}
 \caption{the interfaces of the stage ID}
 \end{table}
