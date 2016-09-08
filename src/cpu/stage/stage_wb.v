@@ -1,12 +1,12 @@
 module stage_wb(
     input             clock                   ,
     input             reset                   ,
+    output reg [31:0] register_hi_read_data   ,
     input             register_hi_write_enable,
     input      [31:0] register_hi_write_data  ,
-    output reg [31:0] register_hi_read_data   ,
+    output reg [31:0] register_lo_read_data   ,
     input             register_lo_write_enable,
-    input      [31:0] register_lo_write_data  ,
-    output reg [31:0] register_lo_read_data    
+    input      [31:0] register_lo_write_data  
 );
     always @ (posedge clock) begin
         if (reset == `RESET_ENABLE) begin

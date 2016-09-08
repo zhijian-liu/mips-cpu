@@ -1,0 +1,136 @@
+\documentclass{article}
+
+\usepackage[version=3]{mhchem} % Package for chemical equation typesetting
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{multirow}
+\usepackage{fourier}
+\usepackage{enumerate}
+\usepackage[colorlinks,linkcolor=red]{hyperref}
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.}
+
+\title{CPU with Five-Stage MIPS Pipeline}
+
+\author{Zhijian \textsc{Liu}}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\begin{tabular}{l r}
+Course: & Computer System\\
+Instructor: & Professor Alei Liang\\
+Teaching Assistant: & Shusheng He
+\end{tabular}
+\end{center}
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+This report is a detailed summary on the final project of the "Computer System" course. In this project, I implemented a toy CPU (I call it \texttt{mips-cpu}) with five-stage MIPS pipeline. The project has the following features:
+\begin{itemize}
+\item
+It supports almost all of the MIPS standard integer instructions (except those related to the coprocessors).
+\item
+It supports full bypassing in order to mitigate the data hazards.
+\end{itemize}
+The project is written in Verilog HDL and is available under the open-source MIT License at \url{https://github.com/zhijian-liu/mips-cpu}.
+
+\section{Main Modules}
+
+\subsection{Stage Modules}
+In the five-stage MIPS pipeline, there are obviously five separate pipeline stages:
+\begin{itemize}
+\item
+stage IF (instruction fetch)
+\item
+stage ID (instruction decode)
+\item
+stage EX (execution)
+\item
+stage MEM (memory access)
+\item
+stage WB (write back)
+\end{itemize}
+In my design philosophy, each of them should be implemented as a single module.
+
+\subsubsection{Instruction Fetch}
+The main function of this module is to generate the program counter and send it to the instruction ROM in order to fetch the current instruction.
+\input{table/stage_if}
+
+This module is implemented in \texttt{src/cpu/stage/stage\_if.v}.
+
+\subsubsection{Instruction Decode}
+The main function of this module is to decode the instruction and extract the operator, category, operands and destination register from it.
+\input{table/stage_id}
+
+In order to mitigate the data hazards, some interfaces are designed to fetch the latest data forwarding from the stage EX and the stage MEM.
+
+After implementing the full bypassing, there is only one kind of data hazard: a load instruction immediately followed by an instruction which has data dependency on it. In this case, we have to enable the "\texttt{stall\_request}" signal in order to stall the pipeline for one cycle.
+
+This module is implemented in \texttt{src/cpu/stage/stage\_id.v}.
+
+\newpage
+\subsubsection{Execution}
+The main function of this module is to calculate the operation result according to the operator and operands sending from the stage ID.
+\input{table/stage_ex}
+
+In order to mitigate the data hazards, some interfaces are designed to fetch the latest data forwarding from the stage MEM and the stage WB.
+
+Note that the "\texttt{stall\_request}" signal is actually redundant because in the functional simulation, all kinds of calculation can be finished in a single cycle.
+
+This module is implemented in \texttt{src/cpu/stage/stage\_ex.v}.
+
+\newpage
+\subsubsection{Memory Access}
+The main function of this module is to handle the memory access instruction: calculate the effective memory address and send it to the data ROM in order to do the load or store operation.
+\input{table/stage_mem}
+
+This module is implemented in \texttt{src/cpu/stage/stage\_mem.v}.
+
+\newpage
+\subsubsection{Write Back}
+The main function of this module is to generate the register HI and LO and send them to the previous stage in order to extract the operands correctly.
+\input{table/stage_wb}
+
+This module is implemented in \texttt{src/cpu/stage/stage\_wb.v}.
+
+%\subsection{Latch Modules}
+
+%\subsection{Storage Modules}
+%
+%\subsection{Control Module}
+
+%\section{Technical Detail}
+%
+%\subsection{Assembler}
+%
+%\subsection{Automatic Test}
+
+%\section{Test Summary}
+
+%\section{Discussion}
+%
+%\begin{itemize}
+%\item
+%Branch prediction:
+%\item
+%\item
+%Out of order execution
+%\end{itemize}
+%
+%I plan to blablabla
+
+\section{Acknowledgements}
+I would like to thank Professor Alei Liang for bringing me such a wonderful course, Shusheng He for his hard work and warm devotion, and Yurong You, Zihao Ye and Lequn Chen for valuable discussions.
+
+\end{document}

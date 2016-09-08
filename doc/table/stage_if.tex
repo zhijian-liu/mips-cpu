@@ -1,0 +1,14 @@
+\begin{table}[!h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+Interface & Type & Usage \\ \hline
+clock & in & clock signal \\ \hline
+reset & in & reset signal \\ \hline
+stall & in & stall signal \\ \hline
+register\_pc\_read\_data & out & \multirow{3}{*}{register PC} \\ \cline{1-2}
+register\_pc\_write\_enable & in &  \\ \cline{1-2}
+register\_pc\_write\_data & in &  \\ \hline
+\end{tabular}
+\caption{the interfaces of the stage IF}
+\end{table}
