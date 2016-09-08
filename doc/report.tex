@@ -79,7 +79,7 @@ The main function of this module is to decode the instruction and extract the op
 
 In order to mitigate the data hazards\footnote{\url{https://en.wikipedia.org/wiki/Hazard\_(computer\_architecture)\#Data\_hazards}}, some interfaces are designed to fetch the latest data forwarding\footnote{\url{https://en.wikipedia.org/wiki/Operand\_forwarding}} from the stage EX and the stage MEM.
 
-After implementing the full bypassing, there is only one kind of data hazard: a load instruction immediately followed by an instruction which has data dependency on it. In this case, we have to enable the "\texttt{stall\_request}" signal in order to stall the pipeline for one cycle.
+After implementing the full bypassing, there is only one kind of data hazard: a load instruction immediately followed by an instruction which has data dependency on it. In this case, we have to enable the "stall\_request" signal in order to stall the pipeline for one cycle.
 
 This module is implemented in \texttt{src/cpu/stage/stage\_id.v}.
 
@@ -90,7 +90,7 @@ The main function of this module is to calculate the operation result according 
 
 In order to mitigate the data hazards, some interfaces are designed to fetch the latest data forwarding from the stage MEM and the stage WB.
 
-Note that the "\texttt{stall\_request}" signal is actually redundant because in the functional simulation\footnote{\url{https://en.wikipedia.org/wiki/Logic\_simulation}}, all kinds of calculation can be finished in a single cycle.
+Note that the "stall\_request" signal is actually redundant because in the functional simulation\footnote{\url{https://en.wikipedia.org/wiki/Logic\_simulation}}, all kinds of calculation can be finished in a single cycle.
 
 This module is implemented in \texttt{src/cpu/stage/stage\_ex.v}.
 
@@ -156,28 +156,28 @@ This module is implemented in \texttt{src/cpu/control.v}.
 \section{Test Summary}
 
 \subsection{Test Case}
-There are nine test cases in total:
+In the \texttt{test} folder, there are nine test cases in total:
 \begin{itemize}
 \item
-\texttt{test/test-logic}: check the logical instructions.
+\texttt{test-logic}: check the logical instructions.
 \item
-\texttt{test/test-shift}: check the shift instructions.
+\texttt{test-shift}: check the shift instructions.
 \item
-\texttt{test/test-move}: check the move instructions.
+\texttt{test-move}: check the move instructions.
 \item
-\texttt{test/test-arithmetic}: check the arithmetic instructions.
+\texttt{test-arithmetic}: check the arithmetic instructions.
 \item
-\texttt{test/test-jump}: check the jump instructions.
+\texttt{test-jump}: check the jump instructions.
 \item
-\texttt{test/test-branch}: check the branch instructions.
+\texttt{test-branch}: check the branch instructions.
 \item
-\texttt{test/test-memory}: check the memory instructions.
+\texttt{test-memory}: check the memory instructions.
 \item
-\texttt{test/test-stall}: check the stall detection.
+\texttt{test-stall}: check the stall detection.
 \item
-\texttt{test/test-forwarding}: check the data forwarding.
+\texttt{test-forwarding}: check the data forwarding.
 \end{itemize}
-In each test folder, there are totally three files:
+In each test case folder, there are totally three files:
 \begin{itemize}
 \item
 \texttt{asm.s}: the testing MIPS assembly code.
@@ -186,7 +186,27 @@ In each test folder, there are totally three files:
 \item
 \texttt{Makefile}: the testing script.
 \end{itemize}
-A detailed guide to running the automatic test is written in \texttt{README.md}.
+A detailed guide to running the automatic testing is written in \texttt{README.md}.
+
+\subsection{Test Result}
+After running the automatic testing, you will see the following in your terminal.
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{image/terminal}
+\caption{the automatic testing result in the terminal}
+\end{center}
+\end{figure}
+
+At the meantime, a waveform simulation file (\texttt{test.vcd}) will be generated in each test case folder. Here are some waveforms captured on Scansion\footnote{\url{http://www.logicpoet.com/scansion/}}.
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{image/test-logic}
+\includegraphics[width=0.9\textwidth]{image/test-jump}
+\includegraphics[width=0.9\textwidth]{image/test-stall}
+\includegraphics[width=0.9\textwidth]{image/test-forwarding}
+\caption{the waveform simulation of some test cases}
+\end{center}
+\end{figure}
 
 %\section{Discussion}
 
