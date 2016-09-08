@@ -36,12 +36,16 @@ Teaching Assistant: & Shusheng He
 \newpage
 
 \section{Introduction}
-This report is a detailed summary on the final project of the "Computer System" course. In this project, I implemented a toy CPU (I call it \texttt{mips-cpu}) with five-stage MIPS pipeline. The project has the following features:
+This report is a detailed summary on the final project of the "Computer System" course. In this project, I implemented a toy CPU with five-stage MIPS pipeline.
+
+The project has the following features:
 \begin{itemize}
 \item
 It supports almost all of the MIPS standard integer instructions (except those related to the coprocessors).
 \item
-It supports full bypassing in order to mitigate the data hazards.
+It supports the full bypassing in order to mitigate the data hazards.
+\item
+It supports the automatic testing.
 \end{itemize}
 The project is written in Verilog HDL and is available under the open-source MIT License at \url{https://github.com/zhijian-liu/mips-cpu}.
 
@@ -104,7 +108,21 @@ The main function of this module is to maintain the register HI and register LO.
 
 This module is implemented in \texttt{src/cpu/stage/stage\_wb.v}.
 
-%\subsection{Latch Modules}
+\subsection{Latch Modules}
+In the five-stage MIPS pipeline, there are totally four pipeline latches which act as the buffers between the neighbouring pipeline stages. 
+
+These modules are implemented in:
+\begin{itemize}
+\item
+\texttt{src/cpu/latch/latch\_if\_id.v}
+\item
+\texttt{src/cpu/latch/latch\_id\_ex.v}
+\item
+\texttt{src/cpu/latch/latch\_ex\_mem.v}
+\item
+\texttt{src/cpu/latch/latch\_mem\_wb.v}
+\end{itemize}
+In my implementation, all of the pipeline latches update the data on the rising edge of the clock signal.
 
 %\subsection{Storage Modules}
 %
