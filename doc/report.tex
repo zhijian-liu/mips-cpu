@@ -64,13 +64,13 @@ stage WB (write back)
 In my design philosophy, each of them should be implemented as a single module.
 
 \subsubsection{Instruction Fetch}
-The main function of this module is to generate the program counter and send it to the instruction ROM in order to fetch the current instruction.
+The main function of this module is to maintain the program counter and send it to the instruction ROM in order to fetch the current instruction.
 \input{table/stage_if}
 
 This module is implemented in \texttt{src/cpu/stage/stage\_if.v}.
 
 \subsubsection{Instruction Decode}
-The main function of this module is to decode the instruction and extract the operator, category, operands and destination register from it.
+The main function of this module is to decode the instruction and extract the operator, category, operands and destination from it.
 \input{table/stage_id}
 
 In order to mitigate the data hazards, some interfaces are designed to fetch the latest data forwarding from the stage EX and the stage MEM.
@@ -81,7 +81,7 @@ This module is implemented in \texttt{src/cpu/stage/stage\_id.v}.
 
 \newpage
 \subsubsection{Execution}
-The main function of this module is to calculate the operation result according to the operator and operands sending from the stage ID.
+The main function of this module is to calculate the operation result according to the operator and operands received from the stage ID.
 \input{table/stage_ex}
 
 In order to mitigate the data hazards, some interfaces are designed to fetch the latest data forwarding from the stage MEM and the stage WB.
@@ -92,14 +92,14 @@ This module is implemented in \texttt{src/cpu/stage/stage\_ex.v}.
 
 \newpage
 \subsubsection{Memory Access}
-The main function of this module is to handle the memory access instruction: calculate the effective memory address and send it to the data ROM in order to do the load or store operation.
+The main function of this module is to handle the memory access instruction: calculate the effective memory address and send it to the data RAM in order to execute the load or store operation.
 \input{table/stage_mem}
 
 This module is implemented in \texttt{src/cpu/stage/stage\_mem.v}.
 
 \newpage
 \subsubsection{Write Back}
-The main function of this module is to generate the register HI and LO and send them to the previous stage in order to extract the operands correctly.
+The main function of this module is to maintain the register HI and register LO.
 \input{table/stage_wb}
 
 This module is implemented in \texttt{src/cpu/stage/stage\_wb.v}.
