@@ -9,8 +9,19 @@
 ### Install the `iverilog`
 From a terminal:
 
-	sudo apt-get install verilog
+	# install some dependency packages
+	sudo apt-get update
+
+	# download the iverilog
+	git clone https://github.com/steveicarus/iverilog.git
+	cd iverilog && git checkout --track -b v10-branch origin/v10-branch
 	
+	# configure and install the iverilog
+	sh autoconf.sh
+	./configure
+	sudo make
+	sudo make install
+		
 After installation, you can try the following command to see the version information:
 
 	iverilog -v
@@ -22,6 +33,13 @@ From a terminal:
 	tar jxvf mips-2014.05-24-mips-sde-elf-i686-pc-linux-gnu.tar.bz2
 	rm mips-2014.05-24-mips-sde-elf-i686-pc-linux-gnu.tar.bz2
 	mv mips-2014.05 ~
+
+### One more step for 64-bit Linux
+From a terminal:
+
+	sudo dpkg --add-architecture i386
+	sudo apt-get update
+	sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
 
 ## Prepare environment for Mac OS X
 
@@ -45,7 +63,7 @@ From a terminal:
 ## Installation
 From a terminal:
 	
-	git clone git@github.com:zhijian-liu/mips-cpu.git
+	git clone https://github.com/zhijian-liu/mips-cpu.git
 
 ## Run the tests
 From a terminal:
