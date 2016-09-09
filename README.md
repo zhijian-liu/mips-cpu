@@ -9,18 +9,11 @@
 ### Install the `iverilog`
 From a terminal:
 
-	# install some dependency packages
-	sudo apt-get update
-
-	# download the iverilog
 	git clone https://github.com/steveicarus/iverilog.git
 	cd iverilog && git checkout --track -b v10-branch origin/v10-branch
-	
-	# configure and install the iverilog
-	sh autoconf.sh
-	./configure
-	sudo make
-	sudo make install
+	sudo apt-get install autoconf gperf flex bison
+	sh autoconf.sh && ./configure
+	sudo make && sudo make install
 		
 After installation, you can try the following command to see the version information:
 
