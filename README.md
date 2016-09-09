@@ -4,25 +4,6 @@
 
 `mips-cpu` is an `OpenMIPS`-like toy CPU with five-stage MIPS pipeline.
 
-## Prepare environment for Linux
-
-### Install the `iverilog`
-From a terminal:
-
-	sudo apt-get install verilog
-	
-After installation, you can try the following command to see the version information:
-
-	iverilog -v
-
-### Install the `GCC toolchain`
-From a terminal:
-	
-	wget https://sourcery.mentor.com/GNUToolchain/package12725/public/mips-sde-elf/mips-2014.05-24-mips-sde-elf-i686-pc-linux-gnu.tar.bz2
-	tar jxvf mips-2014.05-24-mips-sde-elf-i686-pc-linux-gnu.tar.bz2
-	rm mips-2014.05-24-mips-sde-elf-i686-pc-linux-gnu.tar.bz2
-	mv mips-2014.05 ~
-
 ## Prepare environment for Mac OS X
 
 ### Install the `iverilog`
