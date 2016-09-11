@@ -83,3 +83,6 @@ For example, you can check whether the `data forwarding` is implemented correctl
 	
 	cd test/test-forwarding && make all
 
+## License
+`mips-cpu` is released under the [open-source MIT license](https://github.com/zhijian-liu/mips-cpu/blob/master/LICENSE).
+
