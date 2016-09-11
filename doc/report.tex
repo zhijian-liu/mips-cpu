@@ -213,12 +213,22 @@ Due to time constraints, it would be impossible to support all of the amazing fe
 \begin{itemize}
 \item
 Instruction cache and data cache.
+
+There is no memory delay by now because all of the tests are functional simulation. Nevertheless, instruction cache and data cache are indispensable if we want to run this CPU on the FPGA. 
 \item
 Static and dynamic branch prediction.
+
+Control hazards harm the performance badly while the static and dynamic branch prediction can mitigate the control hazards to a large extent.
+
+In my current implementation, one delay slot is supported to help alleviate this problem. Unfortunately, this solution is not always practicable since in some cases, the compiler cannot find any codes to fill in the delay slot.
 \item
-Out-of-order execution.
+Out-of-order execution with Tomasulo's algorithm\footnote{\url{https://en.wikipedia.org/wiki/Tomasulo_algorithm}}.
+
+The major innovations of Tomasulo's algorithm include register renaming in hardware, reservation stations for all execution units, and a common data bus on which computed values broadcast to all reservation stations. These developments allow for improved parallel execution of instructions.
 \item
 Exception and interruption.
+
+To run a modern operating system, the CPU should be able to handle the internal exceptions and external interruptions. In order to support these features, the coprocessor should be implemented.
 \end{itemize}
 I plan to support most of these features in the coming "Computer System" course.
 
