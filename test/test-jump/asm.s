@@ -1,11 +1,11 @@
-   .org 0x0
-   .set noat
-   .set noreorder
-   .set nomacro
-   .global _start
+.org 0x0
+.set noat
+.set noreorder
+.set nomacro
+.global _start
 
 _start:
-    jal start
+    jal func
     nop
 
 loop:
@@ -13,7 +13,7 @@ loop:
     j loop
     nop
 
-start:
+func:
     add $1, $0, $0
     jr $ra
     nop

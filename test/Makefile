@@ -8,7 +8,8 @@ all:
 	cd test-memory     && make
 	cd test-stall      && make
 	cd test-forwarding && make
+	cd test-yamin      && make
 	@printf "\033[92;1m==>\033[0m all tests passed.\n"
 
 clean:
-	rm -rf */test.vcd
+	rm -rf */dump.vcd

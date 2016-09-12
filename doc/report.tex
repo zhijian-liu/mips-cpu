@@ -150,26 +150,28 @@ This module is implemented in \texttt{src/cpu/control.v}.
 \section{Test Summary}
 
 \subsection{Test Case}
-In the \texttt{test} folder, there are nine test cases in total:
+In the \texttt{test} folder, there are ten test cases in total:
 \begin{itemize}
 \item
-\texttt{test-logic}: check the logical instructions.
+\texttt{test-logic} from \cite{lei2014computer}: check the logical instructions.
 \item
-\texttt{test-shift}: check the shift instructions.
+\texttt{test-shift} from \cite{lei2014computer}: check the shift instructions.
 \item
-\texttt{test-move}: check the move instructions.
+\texttt{test-move} from \cite{lei2014computer}: check the move instructions.
 \item
-\texttt{test-arithmetic}: check the arithmetic instructions.
+\texttt{test-arithmetic} from \cite{lei2014computer}: check the arithmetic instructions.
 \item
 \texttt{test-jump}: check the jump instructions.
 \item
 \texttt{test-branch}: check the branch instructions.
 \item
-\texttt{test-memory}: check the memory instructions.
+\texttt{test-memory} from \cite{lei2014computer}: check the memory instructions.
 \item
-\texttt{test-stall}: check the stall detection.
+\texttt{test-stall} from \cite{lei2014computer}: check the stall detection.
 \item
-\texttt{test-forwarding}: check the data forwarding.
+\texttt{test-forwarding} from \cite{lei2014computer}: check the data forwarding.
+\item
+\texttt{test-yamin} from \cite{li2011computer}: overall check.
 \end{itemize}
 In each test case folder, there are totally three files:
 \begin{itemize}
@@ -191,7 +193,7 @@ After running the automatic testing, you will see the following in your terminal
 \end{center}
 \end{figure}
 
-At the meantime, a waveform simulation file (\texttt{test.vcd}) will be generated in each test case folder. Here are some waveforms captured on Scansion\footnote{\url{http://www.logicpoet.com/scansion/}}.
+At the meantime, a waveform simulation file (\texttt{dump.vcd}) will be generated in each test case folder. Here are some waveforms captured on Scansion\footnote{\url{http://www.logicpoet.com/scansion/}}.
 \begin{figure}[!h]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{image/test-logic}

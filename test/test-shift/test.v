@@ -11,7 +11,7 @@ module test();
     always #1 clock = ~clock;
 
     initial begin
-        $dumpfile("test.vcd");
+        $dumpfile("dump.vcd");
 
         $dumpvars;
         $dumpvars(0, sopc.cpu.register.storage[2]);
