@@ -74,6 +74,7 @@ The `test` is composed of the following test cases:
 	test-memory
 	test-stall
 	test-forwarding
+	test-yamin
 	
 If you want to run a single test case, you can use the following command:
 	
