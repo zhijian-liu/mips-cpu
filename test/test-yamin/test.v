@@ -28,6 +28,6 @@ module test();
         reset = 1'b1;
 
         #20 reset = 1'b0;
-        `PASS;
+        #1000`PASS;
     end
 endmodule
