@@ -2,69 +2,54 @@
 
 ## Introduction
 
-`mips-cpu` is an `OpenMIPS`-like toy CPU with five-stage MIPS pipeline.
+This project is an `OpenMIPS`-like toy CPU with five-stage MIPS pipeline.
 
-## Prepare environment for Linux
+## Preparation for Linux
 
 ### Install the `iverilog`
-From a terminal:
-
 	git clone https://github.com/steveicarus/iverilog.git
 	cd iverilog && git checkout --track -b v10-branch origin/v10-branch
 	sudo apt-get install autoconf gperf flex bison
 	sh autoconf.sh && ./configure
 	sudo make && sudo make install
-		
-After installation, you can try the following command to see the version information:
+
+After installation, you may try the following command to see the version information:
 
 	iverilog -v
 
-### Install the `GCC toolchain`
-From a terminal:
-	
+### Install the `GCC toolchain`	
 	wget https://sourcery.mentor.com/GNUToolchain/package12725/public/mips-sde-elf/mips-2014.05-24-mips-sde-elf-i686-pc-linux-gnu.tar.bz2
 	tar jxvf mips-2014.05-24-mips-sde-elf-i686-pc-linux-gnu.tar.bz2
 	rm mips-2014.05-24-mips-sde-elf-i686-pc-linux-gnu.tar.bz2
 	mv mips-2014.05 ~
 
 ### One more step for 64-bit Linux
-From a terminal:
-
 	sudo dpkg --add-architecture i386
 	sudo apt-get update
 	sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
 
-## Prepare environment for Mac OS X
+## Preparation for Mac OS X
 
 ### Install the `iverilog`
-From a terminal:
-
 	brew install icarus-verilog
-	
-After installation, you can try the following command to see the version information:
+
+After installation, you may try the following command to see the version information:
 
 	iverilog -v
 
-### Install the `GCC toolchain`
-From a terminal:
-	
+### Install the `GCC toolchain`	
 	wget https://github.com/sergev/LiteBSD/releases/download/tools/gcc-4.8.1-mips-macosx.tgz
 	tar zxvf gcc-4.8.1-mips-macosx.tgz
 	rm gcc-4.8.1-mips-macosx.tgz
 	mv mips-gcc-4.8.1 ~
 
 ## Installation
-From a terminal:
-	
 	git clone https://github.com/zhijian-liu/mips-cpu.git
 
-## Run the tests
-From a terminal:
-
+## Usages
 	cd test && make all
-	
-The `test` is composed of the following test cases:
-	
+
+In detail, the `test` is composed of the following unit test cases:	
 	test-logic
 	test-shift
 	test-move
@@ -75,15 +60,13 @@ The `test` is composed of the following test cases:
 	test-stall
 	test-forwarding
 	test-yamin
-	
-If you want to run a single test case, you can use the following command:
-	
-	cd test/`test-case-name` && make all
-	
-For example, you can check whether the `data forwarding` is implemented correctly by
-	
+
+If you want to run a single unit test case, you may use the following command:
+	cd test/<test-name> && make all
+
+For example, you can check whether the `data forwarding` module is implemented correctly by
 	cd test/test-forwarding && make all
 
 ## License
-`mips-cpu` is released under the [open-source MIT license](https://github.com/zhijian-liu/mips-cpu/blob/master/LICENSE).
+This project is released under the [open-source MIT license](https://github.com/zhijian-liu/mips-cpu/blob/master/LICENSE).
 
