@@ -66,8 +66,10 @@ git clone https://github.com/zhijian-liu/mips-cpu.git
 ```shell
 cd test && make all
 ```
+In detail, the `test` is composed of the following unit test cases:
 
-In detail, the `test` is composed of the following unit test cases:	
+
+
 	test-logic
 	test-shift
 	test-move
