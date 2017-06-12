@@ -90,8 +90,6 @@ cd test/<test-name> && make all
 ```
 For example, you can check whether the `data forwarding` module is implemented correctly by
 
-
-
 ```Bash
 cd test/test-forwarding && make all
 ```
