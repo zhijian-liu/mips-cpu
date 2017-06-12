@@ -36,7 +36,7 @@ sudo apt-get update
 sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
 ```
 
-## Preparation for Mac OS X
+## Preparation for Mac OS
 
 ### Install the `iverilog`
 ```shell
