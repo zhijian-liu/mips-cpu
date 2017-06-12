@@ -83,8 +83,6 @@ In detail, the `test` is composed of the following unit test cases:
 
 If you want to run a single unit test case, you may use the following command:
 
-
-
 ```shell
 cd test/<test-name> && make all
 ```
